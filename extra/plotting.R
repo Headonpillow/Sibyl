@@ -1,3 +1,8 @@
+library(patchwork)
+
+# Remember here to extract the first layer which corresponds to the threshold number
+# i.e. 100, then you get an actual plot list.
+
 chunk_size <- 10
 n_plots <- length(result$ordination_plots)
 plot_grids <- list()
@@ -18,3 +23,13 @@ for (i in seq_along(plot_grids)) {
   filepath <- paste0("/HLCYG/", filename)
   ggsave(filepath, plot = plot_grids[[i]], width = 10, height = 8, dpi = 300)
 }
+
+
+OR 
+
+n_plots <- length(threshold_testing$ordination_plots[[1]])
+plot_list <- threshold_testing$ordination_plots[[1]]
+indexes <- c(1, n_plots/2, n_plots)
+summarised_plot_list <- plot_list[indexes]
+
+grid_plot <- ggarrange(plotlist = summarised_plot_list, common.legend = T, ncol = 3)

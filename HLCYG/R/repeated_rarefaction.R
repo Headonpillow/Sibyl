@@ -1,11 +1,12 @@
-#' Perform one iteration of repeated rarefaction and produce ordination plot
+#' Perform repeated rarefaction and produce an ordination plot based on PCA.
 #'
 #' @param physeq A phyloseq object.
 #' @param repeats A positive integer. Indicates the amount of repeats run.
 #' A value = 1 means no repeats are used. Default = 50.
 #' @param threshold A positive integer. The threshold value for the rarefaction. Default = 250
-#' @param colorb A string. Name of the column with data to colour the graph by.
-#' @param shapeb A string. Name of the column with data to shape the points on the graph by.
+#' @param colorb A string. Name of the column with data to color the samples by.
+#' @param group A string. Name of the column with data to group the samples by, this is also gonna 
+#' be the group the ellipse calculation is based on.
 #' @param cloud Boolean. Aesthetic setting for the graph. Default is FALSE.
 #' TRUE shows datapoints for all repeats.
 #' @param ellipse Boolean. Aesthetic setting for the graph. Default is TRUE.
@@ -13,9 +14,7 @@
 #' @returns A list with repeat count table, repeat info table, ordination object,
 #' physeq object, dataframe with all repeat ordination positions, dataframe with median ordination positions, and ordination plot.
 #' @examples
-#' repeated_rarefaction(HLCYG_physeq_data, repeats=5, threshold=500, method="NMDS", colorb="sample_id", shapeb="location", T, F)
-#' repeated_rarefaction(HLCYG_physeq_data, repeats=10, threshold=250, method="NMDS", colorb="sample_id", shapeb="location", T, T)
-
+#' repeated_rarefaction(HLCYG_physeq_data, repeats = 100, threshold = 1000, colorb = "location", group = "location", ellipse = TRUE)
 
 repeated_rarefaction <- function(input, repeats = 50, threshold = 250, colorb="sample_id", group="sample_id", cloud = TRUE, ellipse = FALSE, cores = 4) {
   # Check if input is a Phyloseq object
@@ -34,11 +33,11 @@ repeated_rarefaction <- function(input, repeats = 50, threshold = 250, colorb="s
 
   if (!(colorb %in% names(sample_data(physeq)))) {
     stop(paste("'",colorb,"' is not a column name in the sample information in the inputed phyloseq object.
-                  repeated_rarefaction needs an existing column to color the ordination plot by.", sep=""))
+                  repeated_rarefaction needs an existing column to color samples by.", sep=""))
   }
   if (!(group %in% names(sample_data(physeq)))) {
     stop(paste("'",group,"' is not a column name in the sample information in the inputed phyloseq object.
-                  repeated_rarefaction needs an existing column to shape points in the ordination plot by.", sep=""))
+                  repeated_rarefaction needs an existing column to group samples by.", sep=""))
   }
 
   if (!(is.double(repeats))){
@@ -54,8 +53,8 @@ repeated_rarefaction <- function(input, repeats = 50, threshold = 250, colorb="s
   }
 
   if (repeats <=4 & ellipse == TRUE){
-    warning("Too few repeats to draw confidence ellipses.")
-    ellipse <- F
+    warning("Too few repeats to draw confidence ellipses. Proceeding with the available data.")
+    ellipse <- FALSE
   }
 
   # Perform the different steps of the repeated rarefaction algorithm
@@ -68,11 +67,9 @@ repeated_rarefaction <- function(input, repeats = 50, threshold = 250, colorb="s
   return(invisible(list("repeats" = repeats, "df_consensus_coordinates" = step3$consensus_df, "df_all" = step3$df_all, "plot" = step3$plot)))
 }
 
-#' Rarefaction is performed repeatedly depending on input and a matrix containing all data is created together with a an info file reflecting it.
+#' Rarefaction is performed repeatedly and a list of rarefied matrices is created.
 #'
 #' @param count A matrix. An otu-table containing the count data the rarefaction should be performed on.
-#' @param info Sample Data object from the phyloseq package.
-#' Should contain info about the count data with matching column names.
 #' @param threshold An integer. The threshold value at which to perform rarefaction.
 #' @param repeats An integer. The amount of repeated rarefactions to perform.
 #' A value = 1 means only one iteration of rarefaction is perfomed and therefore no repeats.
@@ -86,6 +83,17 @@ rep_raref <- function(count, threshold, repeats) {
   if (repeats < 0) {
     warning("repeats can't be negative. It needs to be a positive integer. Performs rarefaction without repetition.")
   }
+
+  # Identify rows that do not meet the threshold
+  row_totals <- rowSums(count)
+  below_threshold <- which(row_totals < threshold)
+  # Print a warning with the problematic sample indices
+  if (length(below_threshold) > 0) {
+    warning("The following samples have row sums less than ", threshold, " and have been removed: ", paste(names(below_threshold), collapse = ", "))
+  }
+  # Remove problematic samples
+  count_filtered <- count[row_totals >= threshold, , drop = FALSE]
+  count <- count_filtered
 
   # Set up working files
   rarefied_matrices <- list()
@@ -172,7 +180,20 @@ ord_and_mean <- function(rarefied_matrix_list, repeats, cores = 4) {
 #' #' @param ellipse Boolean. Aesthetic setting for the graph. Default is TRUE.
 #' @returns Returns an ordination plot.
 plot_rep_raref <- function(aligned_ordinations, consensus_coordinates, info, color, group, cloud, ellipse, title) {
-
+  
+  # This code handles the occurrence of samples below the rarefaction threshold
+  # which might have been removed from step1. 
+  # Extract sample names from info
+  data_sample_names <- rownames(info)
+  # Extract row names from the first data frame in aligned_ordinations
+  ordination_sample_names <- rownames(aligned_ordinations[[1]])
+  # Identify samples to remove from info
+  samples_to_remove <- setdiff(data_sample_names, ordination_sample_names)
+  # Remove the extra samples from info
+  if (length(samples_to_remove) > 0) {
+    info <- info[!(rownames(info) %in% samples_to_remove), , drop = FALSE]
+  }
+  
   # Combine aligned ordinations into one data frame for plotting
   aligned_df <- data.frame()
 
@@ -250,7 +271,7 @@ plot_rep_raref <- function(aligned_ordinations, consensus_coordinates, info, col
     xlab("Dimension 1") +
     ylab("Dimension 2")
 
-  return(invisible(list("plot" = plot, "consensus_df" = consensus_df, "df_all" = aligned_df)))
+  return(invisible(list("plot" = plot, "consensus_df" = consensus_df, "df_all" = aligned_df, "updated_info" = info)))
 }
 
 

@@ -95,7 +95,7 @@ test_threshold <- function(input, repeats = 10, t_min = 50, t_max = 250, t_step 
     # Plotting and Index Calculation
   
     for (x in thresholds) {
-
+      
       # Retrieve normalized data for this threshold
       # scaled_points[[paste0("threshold_", x)]] is a combined matrix with all repeats
       # We need to split by repeats again
@@ -117,7 +117,7 @@ test_threshold <- function(input, repeats = 10, t_min = 50, t_max = 250, t_step 
       plots[[paste0("repeat_number ", y)]][[current_key]] <- plot + xlim(x_limits) + ylim(y_limits)
       
       # ======================== Index calculation
-      info <- sample_data(physeq)
+      info <- step3$updated_info
 
       # Fix the normalized consensus coordinates adding group variable
       norm_consensus_df <- data.frame
