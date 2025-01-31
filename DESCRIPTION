@@ -1,9 +1,10 @@
 Package: HLCYG
 Title: How Low Can You Go?
 Version: 1.0
-Authors@R: 
-    person("Lorenzo", "Assentato", "assentato.lorenzo@gmail.com", role = c("aut", "cre"))
-    person("Magdalena", "Polder", , "polder.magdalena@gmail.com", role = c("aut"))
+Authors@R: c(
+    person("Lorenzo", "Assentato", email = "assentato.lorenzo@gmail.com", role = c("aut", "cre")), 
+    person("Magdalena", "Polder", email = "polder.magdalena@gmail.com", role = c("aut"))
+    )
 Description: The HLCYG package provides a convenient way of testing a range of thresholds for rarefation, evaluating the effect of different values on ordination results, integrating with commonly used packages in microbial ecology. You provide phyloseq data with count data and sample information.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license

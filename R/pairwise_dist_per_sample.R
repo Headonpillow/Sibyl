@@ -9,6 +9,7 @@
 #' @returns A single ggplot object with facets showing how the average pairwise distances change across thresholds for each sample_id.
 #' @examples
 #' avg_pairwise_dist_per_sample(HLCYG_physeq_data, repeats = 10, t_min = 50, t_max = 250, t_step = 10)
+
 avg_pairwise_dist_per_sample <- function(input, repeats = 10, t_min = 50, t_max = 250, t_step = 10, cores = 4) {
   # Check if input is a Phyloseq object
   if (!inherits(input, "phyloseq")) {
@@ -74,9 +75,5 @@ avg_pairwise_dist_per_sample <- function(input, repeats = 10, t_min = 50, t_max 
   result <- list(plot = plot, distances = avg_distances)
   return(result)
 }
-
-# Example usage:
-# plot <- avg_pairwise_dist_per_sample(physeq_data, repeats = 10, t_min = 50, t_max = 250, t_step = 10)
-# print(plot)
 
 
