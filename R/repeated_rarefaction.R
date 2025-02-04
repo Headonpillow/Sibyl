@@ -312,5 +312,13 @@ plot_rep_raref <- function(aligned_ordinations, consensus_coordinates, info, col
   return(invisible(list("plot" = plot, "consensus_df" = consensus_df, "df_all" = aligned_df, "updated_info" = info)))
 }
 
-
-
+#' HLCYG_physeq_data
+#'
+#' This is a dataset containing stuff.
+#'
+#' @name HLCYG_physeq_data
+#' 
+#' @format A data frame with 53940 rows and 10 variables:
+#' \describe{
+#'   \item{location}{sample location}
+"HLCYG_physeq_data"

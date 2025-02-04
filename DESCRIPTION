@@ -6,15 +6,13 @@ Authors@R: c(
     person("Magdalena", "Polder", email = "polder.magdalena@gmail.com", role = c("aut"))
     )
 Description: The HLCYG package provides a convenient way of testing a range of thresholds for rarefation, evaluating the effect of different values on ordination results, integrating with commonly used packages in microbial ecology. You provide phyloseq data with count data and sample information.
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+License: GPL-3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Depends: 
-    R (>= 4.3.1)
+    R (>= 4.3.0)
 Imports:
-    BiocManager (>= 1.30.25),
     phyloseq (>= 1.48.0),
     clusterSim (>= 0.51-3),
     dplyr (>= 1.1.3),
