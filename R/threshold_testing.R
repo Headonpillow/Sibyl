@@ -1,16 +1,27 @@
-#' This function is a wrapper designed around "repeated_rarefaction". It allows.
+#' Test Different Rarefaction Thresholds Using Repeated Rarefaction
 #'
-#' @param input A phyloseq object or a table of OTU/ASV counts.
-#' @param repeats A positive integer. Indicates the amount of repeats run. A value = 1 means no repeats are used.
-#' @param t_min An integer. Minimum value for the threshold testing range.
-#' @param t_max An integer. Maximum value for the threshold testing range.
-#' @param t_step An float. Step value for the threshold testing range. A value between 0 and 1 will cause the same threshold to be tested more than once.
-#' @param sample_id A string. Name of the column with sample IDs.
-#' @param group A string. Name of the column with data to group the points by.
-#' @param cores An int. The amount of cores used when running. The default = 4.
-#' @returns A graph with rarefaction threshold as the x axis, and the y axis is the calculated Calinski-Harabasz F-statistic. Each dot indicates the clustering score for the repeated ordination on a single threshold value. The higher score the better.
-#' @examples
-#' test_threshold(HLCYG_physeq_data, repeats = 10, t_min = 200, t_max =1500, t_step = 5, group="location")
+#' This function is a wrapper around `repeated_rarefaction` that evaluates different rarefaction thresholds. 
+#' It runs repeated rarefactions on a phyloseq object and calculates clustering performance using the Calinski-Harabasz index.
+#'
+#' @param input A `phyloseq` object or a table of OTU/ASV counts.
+#' @param repeats An integer. The number of rarefaction repeats. A value of 1 means no repeats. Default = 10.
+#' @param t_min An integer. The minimum value for the threshold testing range.
+#' @param t_max An integer. The maximum value for the threshold testing range.
+#' @param t_step A numeric value. The step size for the threshold testing range. A value between 0 and 1 will cause the same threshold to be tested multiple times.
+#' @param group A string. Name of the column to group points by.
+#' @param cores An integer. Number of cores for parallel processing. Default = 4.
+#'
+#' @return A list containing:
+#'   - `index_plot`: A ggplot2 object showing rarefaction threshold vs. clustering performance.
+#'   - `ordination_plots`: A list of ordination plots for different threshold values.
+#'
+#' @importFrom phyloseq sample_data otu_table
+#' @importFrom vegan vegdist
+#' @importFrom clusterSim index.G1
+#' @importFrom dplyr mutate
+#' @importFrom ggplot2 ggplot aes geom_point labs geom_smooth
+#' @export
+#' 
 test_threshold <- function(input, repeats = 10, t_min = 50, t_max = 250, t_step = 1, group = "sample_id", cores = 4) {
   # Check if input is a Phyloseq object
 
@@ -161,6 +172,15 @@ test_threshold <- function(input, repeats = 10, t_min = 50, t_max = 250, t_step 
   return(output)
 }
 
+#' Print Method for `test_threshold` Objects
+#'
+#' Prints the index plot from a `test_threshold` object.
+#'
+#' @param x A `test_threshold` object.
+#' @param ... Additional arguments (not used).
+#'
+#' @export
+#' 
 print.test_threshold <- function(x, ...) {
   # Print only the index plot
   print(x[["index_plot"]])

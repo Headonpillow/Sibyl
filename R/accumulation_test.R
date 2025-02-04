@@ -1,19 +1,28 @@
 #' Accumulation Curve Analysis
 #'
 #' This function generates accumulation curves for each sample in a given 
-#' Phyloseq object, fits a general accumulation model using the Abundance 
+#' `phyloseq` object, fits a general accumulation model using the Abundance 
 #' Coverage Estimator (ACE) as an asymptote, and identifies the sequencing 
 #' depth at which 75% of the ACE value is reached. It also produces a density 
 #' plot showing the distribution of these 75% completion thresholds.
 #'
-#' @param input A Phyloseq object containing microbial community data.
+#' @param input A `phyloseq` object containing microbial community data.
 #' @param step An integer specifying the step size used for rarefaction.
-#' @returns A set of plots visualizing the accumulation curves and completion 
-#' threshold distributions.
-#' @examples
-#' # Example usage:
-#' # accumulation_test(phyloseq_obj, step = 5)
 #'
+#' @return A list containing:
+#'   - `accumulation_plot`: A ggplot2 object visualizing the accumulation curves.
+#'   - `threshold_density`: A ggplot2 density plot of the 75% ACE threshold.
+#'
+#' @importFrom phyloseq otu_table
+#' @importFrom vegan rarecurve estimateR
+#' @importFrom dplyr left_join mutate group_by select rename
+#' @importFrom tidyr nest unnest pivot_wider
+#' @importFrom purrr map map2
+#' @importFrom broom tidy augment
+#' @importFrom ggplot2 ggplot aes geom_point geom_line scale_color_manual 
+#'   geom_vline facet_wrap theme_minimal labs geom_histogram geom_density
+#' @export
+#' 
 accumulation_test <- function(input, step = 5) {
   # Transform the phyloseq to a df of counts
   counts <- as.data.frame(t(otu_table(input)))

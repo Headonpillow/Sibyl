@@ -1,15 +1,27 @@
 #' Calculate Average Pairwise Distance for Clusters Across Rarefaction Thresholds
 #'
-#' @param input A phyloseq object.
-#' @param repeats A positive integer. The number of rarefaction repeats. Default = 10.
+#' This function performs repeated rarefaction on a phyloseq object, computes 
+#' ordination, and calculates the average pairwise distance for each sample 
+#' across different rarefaction thresholds.
+#'
+#' @param input A `phyloseq` object.
+#' @param repeats An integer. The number of rarefaction repeats. Default = 10.
 #' @param t_min An integer. The minimum rarefaction threshold. Default = 50.
 #' @param t_max An integer. The maximum rarefaction threshold. Default = 250.
-#' @param t_step A float. The step size for thresholds. Default = 10.
+#' @param t_step A numeric value. The step size for thresholds. Default = 10.
 #' @param cores An integer. The number of cores for parallel processing. Default = 4.
-#' @returns A single ggplot object with facets showing how the average pairwise distances change across thresholds for each sample_id.
-#' @examples
-#' avg_pairwise_dist_per_sample(HLCYG_physeq_data, repeats = 10, t_min = 50, t_max = 250, t_step = 10)
-
+#'
+#' @return A list containing:
+#'   - `plot`: A ggplot2 object showing average pairwise distances across thresholds.
+#'   - `distances`: A data frame with calculated distances per sample.
+#'
+#' @importFrom phyloseq sample_data otu_table
+#' @importFrom vegan vegdist
+#' @importFrom dplyr mutate filter group_by summarise
+#' @importFrom ggplot2 ggplot aes geom_line geom_point facet_wrap labs theme_minimal
+#' @importFrom stats dist
+#' @export
+#' 
 avg_pairwise_dist_per_sample <- function(input, repeats = 10, t_min = 50, t_max = 250, t_step = 10, cores = 4) {
   # Check if input is a Phyloseq object
   if (!inherits(input, "phyloseq")) {
@@ -17,7 +29,7 @@ avg_pairwise_dist_per_sample <- function(input, repeats = 10, t_min = 50, t_max 
   }
   
   # Extract sample IDs
-  sample_ids <- rownames(sample_data(input))
+  sample_ids <- rownames(phyloseq::sample_data(input)) 
   
   # Generate threshold sequence
   thresholds <- seq(t_min, t_max, by = t_step)
@@ -30,7 +42,7 @@ avg_pairwise_dist_per_sample <- function(input, repeats = 10, t_min = 50, t_max 
     message(paste("Processing threshold:", threshold))
     
     # Perform repeated rarefaction
-    rarefied_data <- rep_raref(data.frame(t(otu_table(input))), threshold, repeats)
+    rarefied_data <- rep_raref(data.frame(t(phyloseq::otu_table(input))), threshold, repeats)
     
     # Perform ordination
     ord_result <- ord_and_mean(rarefied_data$rarefied_matrix_list, repeats, cores)

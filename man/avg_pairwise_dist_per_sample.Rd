@@ -14,24 +14,27 @@ avg_pairwise_dist_per_sample(
 )
 }
 \arguments{
-\item{input}{A phyloseq object.}
+\item{input}{A \code{phyloseq} object.}
 
-\item{repeats}{A positive integer. The number of rarefaction repeats. Default = 10.}
+\item{repeats}{An integer. The number of rarefaction repeats. Default = 10.}
 
 \item{t_min}{An integer. The minimum rarefaction threshold. Default = 50.}
 
 \item{t_max}{An integer. The maximum rarefaction threshold. Default = 250.}
 
-\item{t_step}{A float. The step size for thresholds. Default = 10.}
+\item{t_step}{A numeric value. The step size for thresholds. Default = 10.}
 
 \item{cores}{An integer. The number of cores for parallel processing. Default = 4.}
 }
 \value{
-A single ggplot object with facets showing how the average pairwise distances change across thresholds for each sample_id.
+A list containing:
+\itemize{
+\item \code{plot}: A ggplot2 object showing average pairwise distances across thresholds.
+\item \code{distances}: A data frame with calculated distances per sample.
+}
 }
 \description{
-Calculate Average Pairwise Distance for Clusters Across Rarefaction Thresholds
-}
-\examples{
-avg_pairwise_dist_per_sample(HLCYG_physeq_data, repeats = 10, t_min = 50, t_max = 250, t_step = 10)
+This function performs repeated rarefaction on a phyloseq object, computes
+ordination, and calculates the average pairwise distance for each sample
+across different rarefaction thresholds.
 }

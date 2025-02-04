@@ -2,20 +2,24 @@
 % Please edit documentation in R/repeated_rarefaction.R
 \name{ord_and_mean}
 \alias{ord_and_mean}
-\title{Calculates ordination on the repeated count input and as well as a median result for each original datapoint.}
+\title{Perform Ordination and Compute Consensus Coordinates}
 \usage{
 ord_and_mean(rarefied_matrix_list, repeats, cores = 4)
 }
 \arguments{
-\item{repeats}{An integer. The amount of repeats that has been performed on the data.}
+\item{rarefied_matrix_list}{A list of rarefied count tables.}
 
-\item{rarified_matrix_list}{A matrix. Contains the repeated count data.}
+\item{repeats}{An integer. The number of rarefaction repeats.}
+
+\item{cores}{An integer. The number of cores to use. Default = 4.}
 }
 \value{
-Returns a list containg an ordination object, a phyloseq object with
-the repeated count data, a dataframe with all positions from the ordination
-calculaction, and a datafram with just the median position from the calculation.
+A list containing:
+\itemize{
+\item \code{aligned_ordinations}: List of aligned ordinations.
+\item \code{consensus_coordinates}: Consensus coordinates using Procrustes alignment.
+}
 }
 \description{
-Calculates ordination on the repeated count input and as well as a median result for each original datapoint.
+Computes ordination using Bray-Curtis distance and aligns results across multiple rarefied datasets.
 }

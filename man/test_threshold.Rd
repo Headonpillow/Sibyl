@@ -2,7 +2,7 @@
 % Please edit documentation in R/threshold_testing.R
 \name{test_threshold}
 \alias{test_threshold}
-\title{This function is a wrapper designed around "repeated_rarefaction". It allows.}
+\title{Test Different Rarefaction Thresholds Using Repeated Rarefaction}
 \usage{
 test_threshold(
   input,
@@ -15,28 +15,28 @@ test_threshold(
 )
 }
 \arguments{
-\item{input}{A phyloseq object or a table of OTU/ASV counts.}
+\item{input}{A \code{phyloseq} object or a table of OTU/ASV counts.}
 
-\item{repeats}{A positive integer. Indicates the amount of repeats run. A value = 1 means no repeats are used.}
+\item{repeats}{An integer. The number of rarefaction repeats. A value of 1 means no repeats. Default = 10.}
 
-\item{t_min}{An integer. Minimum value for the threshold testing range.}
+\item{t_min}{An integer. The minimum value for the threshold testing range.}
 
-\item{t_max}{An integer. Maximum value for the threshold testing range.}
+\item{t_max}{An integer. The maximum value for the threshold testing range.}
 
-\item{t_step}{An float. Step value for the threshold testing range. A value between 0 and 1 will cause the same threshold to be tested more than once.}
+\item{t_step}{A numeric value. The step size for the threshold testing range. A value between 0 and 1 will cause the same threshold to be tested multiple times.}
 
-\item{group}{A string. Name of the column with data to group the points by.}
+\item{group}{A string. Name of the column to group points by.}
 
-\item{cores}{An int. The amount of cores used when running. The default = 4.}
-
-\item{sample_id}{A string. Name of the column with sample IDs.}
+\item{cores}{An integer. Number of cores for parallel processing. Default = 4.}
 }
 \value{
-A graph with rarefaction threshold as the x axis, and the y axis is the calculated Calinski-Harabasz F-statistic. Each dot indicates the clustering score for the repeated ordination on a single threshold value. The higher score the better.
+A list containing:
+\itemize{
+\item \code{index_plot}: A ggplot2 object showing rarefaction threshold vs. clustering performance.
+\item \code{ordination_plots}: A list of ordination plots for different threshold values.
+}
 }
 \description{
-This function is a wrapper designed around "repeated_rarefaction". It allows.
-}
-\examples{
-test_threshold(HLCYG_physeq_data, repeats = 10, t_min = 200, t_max =1500, t_step = 5, group="location")
+This function is a wrapper around \code{repeated_rarefaction} that evaluates different rarefaction thresholds.
+It runs repeated rarefactions on a phyloseq object and calculates clustering performance using the Calinski-Harabasz index.
 }

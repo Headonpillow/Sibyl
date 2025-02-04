@@ -1,21 +1,32 @@
-#' Perform repeated rarefaction and produce an ordination plot based on PCA.
+#' Perform Repeated Rarefaction and Generate an Ordination Plot
 #'
-#' @param physeq A phyloseq object.
-#' @param repeats A positive integer. Indicates the amount of repeats run.
-#' A value = 1 means no repeats are used. Default = 50.
-#' @param threshold A positive integer. The threshold value for the rarefaction. Default = 250
-#' @param colorb A string. Name of the column with data to color the samples by.
-#' @param group A string. Name of the column with data to group the samples by, this is also gonna 
-#' be the group the ellipse calculation is based on.
-#' @param cloud Boolean. Aesthetic setting for the graph. Default is FALSE.
-#' TRUE shows datapoints for all repeats.
-#' @param ellipse Boolean. Aesthetic setting for the graph. Default is TRUE.
-#' @param cores An int. The amount of cores used when running. The default = 4.
-#' @returns A list with repeat count table, repeat info table, ordination object,
-#' physeq object, dataframe with all repeat ordination positions, dataframe with median ordination positions, and ordination plot.
-#' @examples
-#' repeated_rarefaction(HLCYG_physeq_data, repeats = 100, threshold = 1000, colorb = "location", group = "location", ellipse = TRUE)
-
+#' This function performs repeated rarefaction on a phyloseq object, 
+#' computes ordination, and generates a PCA-based visualization.
+#'
+#' @param input A `phyloseq` object.
+#' @param repeats An integer. The number of rarefaction repeats. Default = 50.
+#' @param threshold An integer. The threshold value for rarefaction. Default = 250.
+#' @param colorb A string. Column name in `sample_data()` used for point colors.
+#' @param group A string. Column name in `sample_data()` used for grouping and ellipse calculation.
+#' @param cloud A boolean. If `TRUE`, all repeated data points are shown. Default = FALSE.
+#' @param ellipse A boolean. If `TRUE`, confidence ellipses are drawn. Default = TRUE.
+#' @param cores An integer. Number of cores to use for parallel processing. Default = 4.
+#'
+#' @return A list containing:
+#'   - `repeats`: Number of repeats.
+#'   - `df_consensus_coordinates`: Median ordination positions.
+#'   - `df_all`: All ordination positions.
+#'   - `plot`: The generated ordination plot.
+#'
+#' @importFrom phyloseq sample_data otu_table
+#' @importFrom dplyr mutate
+#' @importFrom vegan rrarefy vegdist procrustes
+#' @importFrom parallel makeCluster stopCluster
+#' @importFrom doParallel registerDoParallel
+#' @importFrom foreach foreach %dopar%
+#' @importFrom ggplot2 ggplot aes geom_point stat_ellipse theme_minimal ggtitle xlab ylab
+#' @export
+#' 
 repeated_rarefaction <- function(input, repeats = 50, threshold = 250, colorb="sample_id", group="sample_id", cloud = TRUE, ellipse = FALSE, cores = 4) {
   # Check if input is a Phyloseq object
   if (inherits(input, "phyloseq")) {
@@ -67,14 +78,20 @@ repeated_rarefaction <- function(input, repeats = 50, threshold = 250, colorb="s
   return(invisible(list("repeats" = repeats, "df_consensus_coordinates" = step3$consensus_df, "df_all" = step3$df_all, "plot" = step3$plot)))
 }
 
-#' Rarefaction is performed repeatedly and a list of rarefied matrices is created.
+#' Perform Repeated Rarefaction
 #'
-#' @param count A matrix. An otu-table containing the count data the rarefaction should be performed on.
-#' @param threshold An integer. The threshold value at which to perform rarefaction.
-#' @param repeats An integer. The amount of repeated rarefactions to perform.
-#' A value = 1 means only one iteration of rarefaction is perfomed and therefore no repeats.
-#' @returns A list containing a matrix with the repeated count table and another
-#' matrix with the repeated info.
+#' This function performs repeated rarefaction on a count table.
+#'
+#' @param count A matrix. OTU count table.
+#' @param threshold An integer. The threshold for rarefaction.
+#' @param repeats An integer. Number of repeats.
+#'
+#' @return A list containing:
+#'   - `rarefied_matrix_list`: A list of rarefied matrices.
+#'
+#' @importFrom vegan rrarefy
+#' @export
+#' 
 rep_raref <- function(count, threshold, repeats) {
   if (repeats == 0) {
     warning("repeats can't be 0. It needs to be a positive integer. Performs rarefaction without repetition.")
@@ -107,13 +124,24 @@ rep_raref <- function(count, threshold, repeats) {
   return(invisible(list("rarefied_matrix_list"=rarefied_matrices)))
 }
 
-#' Calculates ordination on the repeated count input and as well as a median result for each original datapoint.
+#' Perform Ordination and Compute Consensus Coordinates
 #'
-#' @param rarified_matrix_list A matrix. Contains the repeated count data.
-#' @param repeats An integer. The amount of repeats that has been performed on the data.
-#' @returns Returns a list containg an ordination object, a phyloseq object with
-#' the repeated count data, a dataframe with all positions from the ordination
-#' calculaction, and a datafram with just the median position from the calculation.
+#' Computes ordination using Bray-Curtis distance and aligns results across multiple rarefied datasets.
+#'
+#' @param rarefied_matrix_list A list of rarefied count tables.
+#' @param repeats An integer. The number of rarefaction repeats.
+#' @param cores An integer. The number of cores to use. Default = 4.
+#'
+#' @return A list containing:
+#'   - `aligned_ordinations`: List of aligned ordinations.
+#'   - `consensus_coordinates`: Consensus coordinates using Procrustes alignment.
+#'
+#' @importFrom vegan vegdist procrustes
+#' @importFrom parallel makeCluster stopCluster
+#' @importFrom doParallel registerDoParallel
+#' @importFrom foreach foreach %dopar%
+#' @importFrom geomorph mshape
+#' @export
 ord_and_mean <- function(rarefied_matrix_list, repeats, cores = 4) {
 
   #========================= ordinations and plots generation
@@ -167,18 +195,28 @@ ord_and_mean <- function(rarefied_matrix_list, repeats, cores = 4) {
 }
 
 
-#' Create a plot for the repeated rarefaction.
+#' Generate a Plot for Repeated Rarefaction
 #'
-#' @param ordination An ordination object.
-#' @param physeq A phyloseq object containing the data to be plotted.
-#' @param all_positions A dataframe containing position data for all repeats.
-#' @param mediant_positions A dataframe containing median position data for each original data point.
-#' @param color A string. Name of the column to color points by.
-#' @param shape A string. Name of the column to shape points by. Substitute by "group"
-#' @param cloud Boolean. Aesthetic setting for the graph. Default is FALSE.
-#' TRUE shows datapoints for all repeats.
-#' #' @param ellipse Boolean. Aesthetic setting for the graph. Default is TRUE.
-#' @returns Returns an ordination plot.
+#' Creates a PCA-based visualization of rarefied ordinations, highlighting consensus points.
+#'
+#' @param aligned_ordinations A list of aligned ordination matrices.
+#' @param consensus_coordinates A matrix of consensus coordinates.
+#' @param info A data frame containing sample metadata.
+#' @param color A string. Column name in `info` for coloring.
+#' @param group A string. Column name in `info` for grouping.
+#' @param cloud A boolean. If `TRUE`, all repeated points are shown. Default = FALSE.
+#' @param ellipse A boolean. If `TRUE`, confidence ellipses are drawn. Default = TRUE.
+#' @param title A string. Title of the plot.
+#'
+#' @return A list containing:
+#'   - `plot`: The generated ggplot2 plot.
+#'   - `consensus_df`: A data frame of consensus coordinates.
+#'   - `df_all`: A data frame of all ordination positions.
+#'   - `updated_info`: Updated metadata.
+#'
+#' @importFrom ggplot2 ggplot aes geom_point stat_ellipse theme_minimal ggtitle xlab ylab
+#' @export
+#' 
 plot_rep_raref <- function(aligned_ordinations, consensus_coordinates, info, color, group, cloud, ellipse, title) {
   
   # This code handles the occurrence of samples below the rarefaction threshold

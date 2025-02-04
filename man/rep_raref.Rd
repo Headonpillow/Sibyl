@@ -2,22 +2,23 @@
 % Please edit documentation in R/repeated_rarefaction.R
 \name{rep_raref}
 \alias{rep_raref}
-\title{Rarefaction is performed repeatedly and a list of rarefied matrices is created.}
+\title{Perform Repeated Rarefaction}
 \usage{
 rep_raref(count, threshold, repeats)
 }
 \arguments{
-\item{count}{A matrix. An otu-table containing the count data the rarefaction should be performed on.}
+\item{count}{A matrix. OTU count table.}
 
-\item{threshold}{An integer. The threshold value at which to perform rarefaction.}
+\item{threshold}{An integer. The threshold for rarefaction.}
 
-\item{repeats}{An integer. The amount of repeated rarefactions to perform.
-A value = 1 means only one iteration of rarefaction is perfomed and therefore no repeats.}
+\item{repeats}{An integer. Number of repeats.}
 }
 \value{
-A list containing a matrix with the repeated count table and another
-matrix with the repeated info.
+A list containing:
+\itemize{
+\item \code{rarefied_matrix_list}: A list of rarefied matrices.
+}
 }
 \description{
-Rarefaction is performed repeatedly and a list of rarefied matrices is created.
+This function performs repeated rarefaction on a count table.
 }

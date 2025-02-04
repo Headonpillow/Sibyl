@@ -7,23 +7,21 @@
 accumulation_test(input, step = 5)
 }
 \arguments{
-\item{input}{A Phyloseq object containing microbial community data.}
+\item{input}{A \code{phyloseq} object containing microbial community data.}
 
 \item{step}{An integer specifying the step size used for rarefaction.}
 }
 \value{
-A set of plots visualizing the accumulation curves and completion
-threshold distributions.
+A list containing:
+\itemize{
+\item \code{accumulation_plot}: A ggplot2 object visualizing the accumulation curves.
+\item \code{threshold_density}: A ggplot2 density plot of the 75\% ACE threshold.
+}
 }
 \description{
 This function generates accumulation curves for each sample in a given
-Phyloseq object, fits a general accumulation model using the Abundance
+\code{phyloseq} object, fits a general accumulation model using the Abundance
 Coverage Estimator (ACE) as an asymptote, and identifies the sequencing
 depth at which 75\% of the ACE value is reached. It also produces a density
 plot showing the distribution of these 75\% completion thresholds.
-}
-\examples{
-# Example usage:
-# accumulation_test(phyloseq_obj, step = 5)
-
 }

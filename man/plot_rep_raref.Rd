@@ -2,7 +2,7 @@
 % Please edit documentation in R/repeated_rarefaction.R
 \name{plot_rep_raref}
 \alias{plot_rep_raref}
-\title{Create a plot for the repeated rarefaction.}
+\title{Generate a Plot for Repeated Rarefaction}
 \usage{
 plot_rep_raref(
   aligned_ordinations,
@@ -16,25 +16,31 @@ plot_rep_raref(
 )
 }
 \arguments{
-\item{color}{A string. Name of the column to color points by.}
+\item{aligned_ordinations}{A list of aligned ordination matrices.}
 
-\item{cloud}{Boolean. Aesthetic setting for the graph. Default is FALSE.
-TRUE shows datapoints for all repeats.
-#' @param ellipse Boolean. Aesthetic setting for the graph. Default is TRUE.}
+\item{consensus_coordinates}{A matrix of consensus coordinates.}
 
-\item{ordination}{An ordination object.}
+\item{info}{A data frame containing sample metadata.}
 
-\item{physeq}{A phyloseq object containing the data to be plotted.}
+\item{color}{A string. Column name in \code{info} for coloring.}
 
-\item{all_positions}{A dataframe containing position data for all repeats.}
+\item{group}{A string. Column name in \code{info} for grouping.}
 
-\item{mediant_positions}{A dataframe containing median position data for each original data point.}
+\item{cloud}{A boolean. If \code{TRUE}, all repeated points are shown. Default = FALSE.}
 
-\item{shape}{A string. Name of the column to shape points by. Substitute by "group"}
+\item{ellipse}{A boolean. If \code{TRUE}, confidence ellipses are drawn. Default = TRUE.}
+
+\item{title}{A string. Title of the plot.}
 }
 \value{
-Returns an ordination plot.
+A list containing:
+\itemize{
+\item \code{plot}: The generated ggplot2 plot.
+\item \code{consensus_df}: A data frame of consensus coordinates.
+\item \code{df_all}: A data frame of all ordination positions.
+\item \code{updated_info}: Updated metadata.
+}
 }
 \description{
-Create a plot for the repeated rarefaction.
+Creates a PCA-based visualization of rarefied ordinations, highlighting consensus points.
 }
