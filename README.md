@@ -10,3 +10,10 @@ if (!requireNamespace("BiocManager", quietly = TRUE)) {
     install.packages("BiocManager")
 }
 BiocManager::install("phyloseq")
+
+On unix based systems loading the package will output a warning: 
+Warning messages:
+1: In rgl.init(initValue, onlyNULL) : RGL: unable to open X11 display
+2: 'rgl.init' failed, running with 'rgl.useNULL = TRUE'. 
+
+This does not affect the package behaviour. 
