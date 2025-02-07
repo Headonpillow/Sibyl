@@ -15,11 +15,11 @@
 #'   - `index_plot`: A ggplot2 object showing rarefaction threshold vs. clustering performance.
 #'   - `ordination_plots`: A list of ordination plots for different threshold values.
 #'
-#' @importFrom phyloseq sample_data otu_table
+#' @importFrom phyloseq sample_data otu_table sample_data<-
 #' @importFrom vegan vegdist
 #' @importFrom clusterSim index.G1
 #' @importFrom dplyr mutate
-#' @importFrom ggplot2 ggplot aes geom_point labs geom_smooth
+#' @importFrom ggplot2 ggplot aes geom_point labs geom_smooth xlim ylim
 #' @export
 #' 
 test_threshold <- function(input, repeats = 10, t_min = 50, t_max = 250, t_step = 1, group = "sample_id", cores = 4) {

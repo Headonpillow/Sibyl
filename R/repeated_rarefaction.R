@@ -141,6 +141,7 @@ rep_raref <- function(count, threshold, repeats) {
 #' @importFrom doParallel registerDoParallel
 #' @importFrom foreach foreach %dopar%
 #' @importFrom geomorph mshape
+#' @importFrom stats cmdscale
 #' @export
 ord_and_mean <- function(rarefied_matrix_list, repeats, cores = 4) {
 
@@ -214,7 +215,8 @@ ord_and_mean <- function(rarefied_matrix_list, repeats, cores = 4) {
 #'   - `df_all`: A data frame of all ordination positions.
 #'   - `updated_info`: Updated metadata.
 #'
-#' @importFrom ggplot2 ggplot aes geom_point stat_ellipse theme_minimal ggtitle xlab ylab
+#' @importFrom ggplot2 ggplot aes geom_point stat_ellipse theme_minimal 
+#' ggtitle xlab ylab theme element_text
 #' @export
 #' 
 plot_rep_raref <- function(aligned_ordinations, consensus_coordinates, info, color, group, cloud, ellipse, title) {
@@ -313,12 +315,5 @@ plot_rep_raref <- function(aligned_ordinations, consensus_coordinates, info, col
 }
 
 #' HLCYG_physeq_data
-#'
 #' This is a dataset containing stuff.
-#'
-#' @name HLCYG_physeq_data
-#' 
-#' @format A data frame with 53940 rows and 10 variables:
-#' \describe{
-#'   \item{location}{sample location}
 "HLCYG_physeq_data"

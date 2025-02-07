@@ -3,16 +3,16 @@
 \docType{data}
 \name{HLCYG_physeq_data}
 \alias{HLCYG_physeq_data}
-\title{HLCYG_physeq_data}
+\title{HLCYG_physeq_data
+This is a dataset containing stuff.}
 \format{
-A data frame with 53940 rows and 10 variables:
-\describe{
-\item{location}{sample location}
+An object of class \code{phyloseq} of length 1.
 }
 \usage{
 HLCYG_physeq_data
 }
 \description{
+HLCYG_physeq_data
 This is a dataset containing stuff.
 }
 \keyword{datasets}

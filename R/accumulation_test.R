@@ -16,11 +16,15 @@
 #' @importFrom phyloseq otu_table
 #' @importFrom vegan rarecurve estimateR
 #' @importFrom dplyr left_join mutate group_by select rename
+#' @importFrom magrittr %>%
 #' @importFrom tidyr nest unnest pivot_wider
 #' @importFrom purrr map map2
 #' @importFrom broom tidy augment
+#' @importFrom stats setNames density
 #' @importFrom ggplot2 ggplot aes geom_point geom_line scale_color_manual 
 #'   geom_vline facet_wrap theme_minimal labs geom_histogram geom_density
+#'   labeller
+#'   
 #' @export
 #' 
 accumulation_test <- function(input, step = 5) {
