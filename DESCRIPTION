@@ -12,7 +12,8 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Depends: 
     R (>= 4.3.0),
-    BiocManager
+    BiocManager (>= 3.20)
+biocViews:
 Imports:
     phyloseq (>= 1.48.0),
     clusterSim (>= 0.51-3),
