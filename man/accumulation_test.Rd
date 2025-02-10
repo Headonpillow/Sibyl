@@ -19,8 +19,8 @@ A list containing:
 }
 }
 \description{
-This function generates accumulation curves for each sample in a given
-\code{phyloseq} object, fits a general accumulation model using the Abundance
+This function generates accumulation (rarefaction) curves for each sample in
+a given \code{phyloseq} object, fits a general accumulation model using the Abundance
 Coverage Estimator (ACE) as an asymptote, and identifies the sequencing
 depth at which 75\% of the ACE value is reached. It also produces a density
 plot showing the distribution of these 75\% completion thresholds.
