@@ -6,10 +6,17 @@ Installation guide and documentation can be found here: https://repeated-rarefac
 
 Installation: 
 
-if (!requireNamespace("BiocManager", quietly = TRUE)) {
+if (!require("BiocManager", quietly = TRUE)) {
     install.packages("BiocManager")
 }
-BiocManager::install("phyloseq")
+BiocManager::install(version = "3.20")
+
+if (!require("BiocManager")) {
+  install.packages("BiocManager")
+}
+
+BiocManager::install("Headonpillow/HLCYG", dependencies = TRUE, force = TRUE)
+
 
 On unix based systems loading the package will output a warning: 
 Warning messages:
