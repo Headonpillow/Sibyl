@@ -7,9 +7,10 @@
 accumulation_test(input, step = 5)
 }
 \arguments{
-\item{input}{A \code{phyloseq} object containing microbial community data.}
+\item{input}{A \code{phyloseq} object.}
 
-\item{step}{An integer specifying the step size used for rarefaction.}
+\item{step}{A numeric value. The step size for drawing the accumulation curve.
+Default = 5.}
 }
 \value{
 A list containing:

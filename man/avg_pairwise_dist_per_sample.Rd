@@ -45,3 +45,7 @@ This function performs repeated rarefaction on a \code{phyloseq} object, compute
 ordination, and calculates the average pairwise distance for each sample
 across different rarefaction thresholds.
 }
+\details{
+In the case the samples do not have enough reads to reach \code{t_max} value, their
+APD are set to 0 after that threshold and a warning message is printed.
+}
