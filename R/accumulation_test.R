@@ -6,8 +6,9 @@
 #' depth at which 75% of the ACE value is reached. It also produces a density 
 #' plot showing the distribution of these 75% completion thresholds.
 #'
-#' @param input A `phyloseq` object containing microbial community data.
-#' @param step An integer specifying the step size used for rarefaction.
+#' @param input A `phyloseq` object.
+#' @param step  A numeric value. The step size for drawing the accumulation curve.
+#' Default = 5.
 #'
 #' @return A list containing:
 #'   - `accumulation_plot`: A ggplot2 object visualizing the accumulation curves.
@@ -15,7 +16,7 @@
 #'
 #' @importFrom phyloseq otu_table
 #' @importFrom vegan rarecurve estimateR
-#' @importFrom dplyr left_join mutate group_by select rename
+#' @importFrom dplyr left_join mutate group_by select rename tibble
 #' @importFrom magrittr %>%
 #' @importFrom tidyr nest unnest pivot_wider
 #' @importFrom purrr map map2
@@ -23,7 +24,7 @@
 #' @importFrom stats setNames density
 #' @importFrom ggplot2 ggplot aes geom_point geom_line scale_color_manual 
 #'   geom_vline facet_wrap theme_minimal labs geom_histogram geom_density
-#'   labeller
+#'   labeller after_stat
 #'   
 #' @export
 #' 
@@ -43,12 +44,12 @@ accumulation_test <- function(input, step = 5) {
   df_joined <- df %>%
     left_join(ace_df, by = "Site")
   
-  # 1) Group by SITE and nest the data
+  # 1) Group by Site and nest the data
   df_nested <- df_joined %>%
     group_by(Site) %>%
     nest()
   
-  # 2) Fit the Michaelis–Menten model to each SITE's data
+  # 2) Fit a generic accumulation model to each Site's data
   df_fitted <- df_nested %>%
     mutate(
       fit = map(data, ~nls(
@@ -56,11 +57,11 @@ accumulation_test <- function(input, step = 5) {
         # So the formula is: Species ~ (ACE * Sample) / (b + Sample)
         Species ~ (ACE * Sample) / (b + Sample),
         data = .x,
-        start = list(b = median(.x$Sample, na.rm = TRUE))  # guess for b
+        start = list(b = median(.x$Sample, na.rm = TRUE))  # a guess for b
       ))
     )
   
-  # 3) Create a new data frame of SAMPLE values over which we want predictions (e.g., a smooth curve)
+  # 3) Create a new data frame of Sample values over which we want a curve
   df_predicted <- df_fitted %>%
     mutate(
       newdata = map(data, ~tibble(
@@ -84,8 +85,8 @@ accumulation_test <- function(input, step = 5) {
     unnest(cols = params) %>%              # unnest to get one row per parameter per Site
     left_join(ace_df, by = "Site")         # bring in the ACE column
   
-  # params_by_site has columns: SITE, term, estimate (and maybe std.error, etc.)
-  # We want to pivot so that 'term' (which is 'a' or 'b') becomes a column
+  # Params_by_site has columns: Site, term, estimate.
+  # Pivot so that 'term' ('a' or 'b') becomes a column
   params_wide <- params_by_site %>%
     select(Site, term, estimate, ACE) %>%
     pivot_wider(names_from = term, values_from = estimate)
@@ -102,15 +103,16 @@ accumulation_test <- function(input, step = 5) {
   
   params_wide <- params_wide %>%
     mutate(
-      sample_95=3*b  # from the math above
+      sample_75=3*b  #  If you solve the accumulation equation by 0.75 the 
+      #resulting x value as per bx is 3. 
     )
   
-  # Suppose SITE is a character (or factor). We map each SITE to its label
+  # Suppose Site is a character (or factor). We map each Site to its label
   labels_vector <- setNames(params_labeled$label, params_labeled$Site)
   
-  # We'll create a small data frame with just SITE and sample_95
+  # We'll create a small data frame with just Site and sample_75
   plateau_lines <- params_wide %>%
-    select(Site, sample_95)
+    select(Site, sample_75)
   
   accumulation_plot <- ggplot() +
     # 1) Original data (points) in red
@@ -140,10 +142,10 @@ accumulation_test <- function(input, step = 5) {
       name = "Data Type",        # Legend title
       values = c("Observed" = "red", "Fitted" = "blue")
     ) +
-    # 4) Vertical dotted line at sample_95 for each SITE
+    # 4) Vertical dotted line at sample_75 for each SITE
     geom_vline(
       data = plateau_lines,
-      aes(xintercept = sample_95),
+      aes(xintercept = sample_75),
       linetype = "dotted",
       color = "black",
       size = 1
@@ -169,7 +171,7 @@ accumulation_test <- function(input, step = 5) {
   # 2) Plot a histogram of 'three_b' with a density curve, flipping coordinates
   #    so that 'three_b' is on the Y axis.
   # ------------------------------------------------------------------------------
-  threshold_density <- ggplot(params_wide, aes(x = sample_95)) +
+  threshold_density <- ggplot(params_wide, aes(x = sample_75)) +
     geom_histogram(aes(y = after_stat(density)), bins = 30, fill = "skyblue", color = "skyblue", alpha = 0.6) +
     # Density line: also map y=..density.., same variable on x
     geom_density(aes(y = after_stat(density)), color = "maroon", linewidth = 1) +

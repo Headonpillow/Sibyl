@@ -21,4 +21,5 @@ A list containing:
 }
 \description{
 This function performs repeated rarefaction on a count table.
+This is the first step of the algorithm.
 }

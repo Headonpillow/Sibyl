@@ -1,19 +1,41 @@
 #' Test Different Rarefaction Thresholds Using Repeated Rarefaction
 #'
-#' This function is a wrapper around `repeated_rarefaction` that evaluates different rarefaction thresholds. 
-#' It runs repeated rarefactions on a phyloseq object and calculates clustering performance using the Calinski-Harabasz index.
+#' This function is a wrapper around `repeated_rarefaction` that evaluates 
+#' different rarefaction thresholds. It runs repeated rarefactions on a 
+#' `phyloseq` object and calculates clustering performance using the Calinski-Harabasz index.
 #'
-#' @param input A `phyloseq` object or a table of OTU/ASV counts.
-#' @param repeats An integer. The number of rarefaction repeats. A value of 1 means no repeats. Default = 10.
-#' @param t_min An integer. The minimum value for the threshold testing range.
-#' @param t_max An integer. The maximum value for the threshold testing range.
-#' @param t_step A numeric value. The step size for the threshold testing range. A value between 0 and 1 will cause the same threshold to be tested multiple times.
-#' @param group A string. Name of the column to group points by.
+#' @param input A `phyloseq` object.
+#' @param repeats An integer or a vector of integers. 
+#' The number of times to repeat rarefaction. A value of 1 means no repeats. 
+#' If using a vector, different rarefaction thresholds will be tested sequentially. 
+#' Default = 50.
+#' @param t_min An integer. The minimum value for the threshold testing range. 
+#' Default = 50.
+#' @param t_max An integer. The maximum value for the threshold testing range. 
+#' Default = 250.
+#' @param t_step A numeric value. The step size for the threshold testing range. 
+#' A value between 0 and 1 will cause the same threshold to be tested multiple times. 
+#' Default = 5.
+#' @param group A string. A string. Column name in `sample_data()` used 
+#' for grouping the samples. It is also on this value that the Calinski-Harabasz
+#' index is calculated.
 #' @param cores An integer. Number of cores for parallel processing. Default = 4.
+#' 
+#' @details
+#' Higher index values are better, and the plateauing of the index values when 
+#' testing higher thresholds indicate that the clouds of repetitions are compact
+#' enough to not being affected by increasing the threshold. 
+#' The Calinski-Harabasz value takes into account both within cluster and between
+#' cluster distances, and in the scope of this function is calculated on the
+#' `group` parameter. 
+#' A sudden drop in CH value means that samples might have been removed because 
+#' they did not have enough reads to reach the threshold. In this case a warning
+#' is printed listing the samples which have been removed.
 #'
 #' @return A list containing:
-#'   - `index_plot`: A ggplot2 object showing rarefaction threshold vs. clustering performance.
-#'   - `ordination_plots`: A list of ordination plots for different threshold values.
+#'   - `index_plot`: A `ggplot` object showing Calinski-Harabasz index vs. rarefaction threshold.
+#'   - `ordination_plots`: A list containing the ordination plots for tested threshold values.
+#'   The ordination plots have different levels corresponding to the number of repeats.
 #'
 #' @importFrom phyloseq sample_data otu_table sample_data<-
 #' @importFrom vegan vegdist
@@ -22,7 +44,7 @@
 #' @importFrom ggplot2 ggplot aes geom_point labs geom_smooth xlim ylim
 #' @export
 #' 
-test_threshold <- function(input, repeats = 10, t_min = 50, t_max = 250, t_step = 1, group = "sample_id", cores = 4) {
+test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step = 5, group = "sample_id", cores = 4) {
   # Check if input is a Phyloseq object
 
   if (inherits(input, "phyloseq")) {
@@ -33,7 +55,7 @@ test_threshold <- function(input, repeats = 10, t_min = 50, t_max = 250, t_step 
 
   # Make the rownames of the Phyloseq object a new "sample_id" variable for the sample data.
   # (this covers the case in which no sample_id column is present in the sample data)
-  # Then set it to a separate variable.
+  # Then set it to a separate variable, and we need one.
   sample_data(physeq)$sample_id <- rownames(sample_data(physeq))
   
   # Determine the thresholds to loop over between min and max and specified step.
@@ -55,10 +77,6 @@ test_threshold <- function(input, repeats = 10, t_min = 50, t_max = 250, t_step 
       step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold = x, repeats = y)
       step2 <- ord_and_mean(step1$rarefied_matrix_list, repeats)
 
-      # step2 should return something like:
-      # $aligned_ordinations: A list of ordination coordinates for each repeat
-      # $consensus_coordinates: a matrix or df of centroid coords
-
       # Store aligned ordination points for this threshold
       # Note: They may not actually be "aligned" in any external sense now,
       # but are just coordinates from each repetition's ordination.
@@ -78,7 +96,7 @@ test_threshold <- function(input, repeats = 10, t_min = 50, t_max = 250, t_step 
     })
     
     # =========================
-    # Instead, we will normalize all coordinates to unit variance.
+    # Normalize all coordinates to unit variance:
     
     # Combine all points across all thresholds to compute global scaling parameters
     all_points <- do.call(rbind, flattened_list)
@@ -127,7 +145,8 @@ test_threshold <- function(input, repeats = 10, t_min = 50, t_max = 250, t_step 
 
       plots[[paste0("repeat_number ", y)]][[current_key]] <- plot + xlim(x_limits) + ylim(y_limits)
       
-      # ======================== Index calculation
+      #======================== 
+      # Index calculation
       info <- step3$updated_info
 
       # Fix the normalized consensus coordinates adding group variable

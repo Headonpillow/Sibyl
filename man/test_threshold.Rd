@@ -6,37 +6,59 @@
 \usage{
 test_threshold(
   input,
-  repeats = 10,
+  repeats = 50,
   t_min = 50,
   t_max = 250,
-  t_step = 1,
+  t_step = 5,
   group = "sample_id",
   cores = 4
 )
 }
 \arguments{
-\item{input}{A \code{phyloseq} object or a table of OTU/ASV counts.}
+\item{input}{A \code{phyloseq} object.}
 
-\item{repeats}{An integer. The number of rarefaction repeats. A value of 1 means no repeats. Default = 10.}
+\item{repeats}{An integer or a vector of integers.
+The number of times to repeat rarefaction. A value of 1 means no repeats.
+If using a vector, different rarefaction thresholds will be tested sequentially.
+Default = 50.}
 
-\item{t_min}{An integer. The minimum value for the threshold testing range.}
+\item{t_min}{An integer. The minimum value for the threshold testing range.
+Default = 50.}
 
-\item{t_max}{An integer. The maximum value for the threshold testing range.}
+\item{t_max}{An integer. The maximum value for the threshold testing range.
+Default = 250.}
 
-\item{t_step}{A numeric value. The step size for the threshold testing range. A value between 0 and 1 will cause the same threshold to be tested multiple times.}
+\item{t_step}{A numeric value. The step size for the threshold testing range.
+A value between 0 and 1 will cause the same threshold to be tested multiple times.
+Default = 5.}
 
-\item{group}{A string. Name of the column to group points by.}
+\item{group}{A string. A string. Column name in \code{sample_data()} used
+for grouping the samples. It is also on this value that the Calinski-Harabasz
+index is calculated.}
 
 \item{cores}{An integer. Number of cores for parallel processing. Default = 4.}
 }
 \value{
 A list containing:
 \itemize{
-\item \code{index_plot}: A ggplot2 object showing rarefaction threshold vs. clustering performance.
-\item \code{ordination_plots}: A list of ordination plots for different threshold values.
+\item \code{index_plot}: A \code{ggplot} object showing Calinski-Harabasz index vs. rarefaction threshold.
+\item \code{ordination_plots}: A list containing the ordination plots for tested threshold values.
+The ordination plots have different levels corresponding to the number of repeats.
 }
 }
 \description{
-This function is a wrapper around \code{repeated_rarefaction} that evaluates different rarefaction thresholds.
-It runs repeated rarefactions on a phyloseq object and calculates clustering performance using the Calinski-Harabasz index.
+This function is a wrapper around \code{repeated_rarefaction} that evaluates
+different rarefaction thresholds. It runs repeated rarefactions on a
+\code{phyloseq} object and calculates clustering performance using the Calinski-Harabasz index.
+}
+\details{
+Higher index values are better, and the plateauing of the index values when
+testing higher thresholds indicate that the clouds of repetitions are compact
+enough to not being affected by increasing the threshold.
+The Calinski-Harabasz value takes into account both within cluster and between
+cluster distances, and in the scope of this function is calculated on the
+\code{group} parameter.
+A sudden drop in CH value means that samples might have been removed because
+they did not have enough reads to reach the threshold. In this case a warning
+is printed listing the samples which have been removed.
 }

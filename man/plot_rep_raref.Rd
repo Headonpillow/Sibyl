@@ -38,9 +38,11 @@ A list containing:
 \item \code{plot}: The generated ggplot2 plot.
 \item \code{consensus_df}: A data frame of consensus coordinates.
 \item \code{df_all}: A data frame of all ordination positions.
-\item \code{updated_info}: Updated metadata.
+\item \code{updated_info}: Updated metadata (if samples have been removed according
+to threshold).
 }
 }
 \description{
-Creates a PCA-based visualization of rarefied ordinations, highlighting consensus points.
+Creates a PCoA-based visualization of rarefied ordinations, calculating median cluster points.
+This is the third step of the algorithm.
 }

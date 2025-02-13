@@ -2,7 +2,7 @@
 % Please edit documentation in R/repeated_rarefaction.R
 \name{repeated_rarefaction}
 \alias{repeated_rarefaction}
-\title{Perform Repeated Rarefaction and Generate an Ordination Plot using PCA}
+\title{Perform Repeated Rarefaction and Generate an Ordination Plot using PCoA}
 \usage{
 repeated_rarefaction(
   input,
@@ -18,7 +18,7 @@ repeated_rarefaction(
 \arguments{
 \item{input}{A \code{phyloseq} object.}
 
-\item{repeats}{An integer. The number of times to repeat rarefaction. Default = 50.}
+\item{repeats}{An integer. The number of times to repeat rarefaction. A value of 1 means no repeats. Default = 50.}
 
 \item{threshold}{An integer. The threshold value to use for rarefaction. Default = 250.}
 
@@ -51,7 +51,7 @@ A list containing (While also showing the plot directly):
 }
 \description{
 This function performs repeated rarefaction on a phyloseq object,
-computes ordination, and generates a PCA-based visualization.
+computes ordination, and generates a PCoA-based visualization.
 The same procedure is used from \code{threshold_testing} function when testing
 a range of thresholds.
 }

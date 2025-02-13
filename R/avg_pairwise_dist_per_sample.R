@@ -1,14 +1,21 @@
-#' Calculate Average Pairwise Distance for Clusters Across Rarefaction Thresholds
+#' Calculate Average Pairwise Distance for Sample Clusters Across Rarefaction Thresholds
 #'
-#' This function performs repeated rarefaction on a phyloseq object, computes 
+#' This function performs repeated rarefaction on a `phyloseq` object, computes 
 #' ordination, and calculates the average pairwise distance for each sample 
 #' across different rarefaction thresholds.
 #'
 #' @param input A `phyloseq` object.
-#' @param repeats An integer. The number of rarefaction repeats. Default = 10.
-#' @param t_min An integer. The minimum rarefaction threshold. Default = 50.
-#' @param t_max An integer. The maximum rarefaction threshold. Default = 250.
-#' @param t_step A numeric value. The step size for thresholds. Default = 10.
+#' @param repeats An integer or a vector of integers. 
+#' The number of times to repeat rarefaction. A value of 1 means no repeats. 
+#' If using a vector, different rarefaction thresholds will be tested sequentially. 
+#' Default = 50.
+#' @param t_min An integer. The minimum value for the threshold testing range. 
+#' Default = 50.
+#' @param t_max An integer. The maximum value for the threshold testing range. 
+#' Default = 250.
+#' @param t_step A numeric value. The step size for the threshold testing range. 
+#' A value between 0 and 1 will cause the same threshold to be tested multiple times. 
+#' Default = 5.
 #' @param cores An integer. The number of cores for parallel processing. Default = 4.
 #'
 #' @return A list containing:
@@ -22,7 +29,7 @@
 #' @importFrom stats dist
 #' @export
 #' 
-avg_pairwise_dist_per_sample <- function(input, repeats = 10, t_min = 50, t_max = 250, t_step = 10, cores = 4) {
+avg_pairwise_dist_per_sample <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step = 5, cores = 4) {
   # Check if input is a Phyloseq object
   if (!inherits(input, "phyloseq")) {
     stop("Input must be a Phyloseq object, including a count table and sample data.")

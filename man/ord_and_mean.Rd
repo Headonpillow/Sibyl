@@ -21,5 +21,7 @@ A list containing:
 }
 }
 \description{
-Computes ordination using Bray-Curtis distance and aligns results across multiple rarefied datasets.
+Computes ordination (PCoA) using Bray-Curtis distance and aligns
+results across multiple rarefied datasets.
+This is the second step of the algorithm.
 }

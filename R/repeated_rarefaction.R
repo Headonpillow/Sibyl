@@ -1,12 +1,12 @@
-#' Perform Repeated Rarefaction and Generate an Ordination Plot using PCA
+#' Perform Repeated Rarefaction and Generate an Ordination Plot using PCoA
 #'
 #' This function performs repeated rarefaction on a phyloseq object, 
-#' computes ordination, and generates a PCA-based visualization.
+#' computes ordination, and generates a PCoA-based visualization.
 #' The same procedure is used from `threshold_testing` function when testing 
 #' a range of thresholds. 
 #'
 #' @param input A `phyloseq` object.
-#' @param repeats An integer. The number of times to repeat rarefaction. Default = 50.
+#' @param repeats An integer. The number of times to repeat rarefaction. A value of 1 means no repeats. Default = 50.
 #' @param threshold An integer. The threshold value to use for rarefaction. Default = 250.
 #' @param colorb A string. Column name in the `sample_data()` bundled with the 
 #' supplied `phyloseq` object, used to color sample points.
@@ -90,7 +90,8 @@ repeated_rarefaction <- function(input, repeats = 50, threshold = 250, colorb="s
 
 #' Perform Repeated Rarefaction
 #'
-#' This function performs repeated rarefaction on a count table.
+#' This function performs repeated rarefaction on a count table. 
+#' This is the first step of the algorithm.
 #'
 #' @param count A matrix. OTU count table.
 #' @param threshold An integer. The threshold for rarefaction.
@@ -114,6 +115,7 @@ rep_raref <- function(count, threshold, repeats) {
   # Identify rows that do not meet the threshold
   row_totals <- rowSums(count)
   below_threshold <- which(row_totals < threshold)
+  
   # Print a warning with the problematic sample indices
   if (length(below_threshold) > 0) {
     warning("The following samples have row sums less than ", threshold, " and have been removed: ", paste(names(below_threshold), collapse = ", "))
@@ -136,7 +138,9 @@ rep_raref <- function(count, threshold, repeats) {
 
 #' Perform Ordination and Compute Consensus Coordinates
 #'
-#' Computes ordination using Bray-Curtis distance and aligns results across multiple rarefied datasets.
+#' Computes ordination (PCoA) using Bray-Curtis distance and aligns 
+#' results across multiple rarefied datasets.
+#' This is the second step of the algorithm.
 #'
 #' @param rarefied_matrix_list A list of rarefied count tables.
 #' @param repeats An integer. The number of rarefaction repeats.
@@ -208,7 +212,8 @@ ord_and_mean <- function(rarefied_matrix_list, repeats, cores = 4) {
 
 #' Generate a Plot for Repeated Rarefaction
 #'
-#' Creates a PCA-based visualization of rarefied ordinations, highlighting consensus points.
+#' Creates a PCoA-based visualization of rarefied ordinations, calculating median cluster points.
+#' This is the third step of the algorithm.
 #'
 #' @param aligned_ordinations A list of aligned ordination matrices.
 #' @param consensus_coordinates A matrix of consensus coordinates.
@@ -223,7 +228,8 @@ ord_and_mean <- function(rarefied_matrix_list, repeats, cores = 4) {
 #'   - `plot`: The generated ggplot2 plot.
 #'   - `consensus_df`: A data frame of consensus coordinates.
 #'   - `df_all`: A data frame of all ordination positions.
-#'   - `updated_info`: Updated metadata.
+#'   - `updated_info`: Updated metadata (if samples have been removed according
+#'   to threshold).
 #'
 #' @importFrom ggplot2 ggplot aes geom_point stat_ellipse theme_minimal 
 #' ggtitle xlab ylab theme element_text
@@ -231,15 +237,14 @@ ord_and_mean <- function(rarefied_matrix_list, repeats, cores = 4) {
 #' 
 plot_rep_raref <- function(aligned_ordinations, consensus_coordinates, info, color, group, cloud, ellipse, title) {
   
-  # Following code handles the occurrence of samples below the rarefaction 
+  # Following code (237-246) handles the occurrence of samples below the rarefaction 
   # threshold which might have been removed from step1:
-  
   # Extract sample names from info
   data_sample_names <- rownames(info)
   # Extract row names from the first data frame in aligned_ordinations
   ordination_sample_names <- rownames(aligned_ordinations[[1]])
-  # Identify samples to remove from info
-  samples_to_remove <- setdiff(data_sample_names, ordination_sample_names)
+  # Identify samples to remove from info (agrep allows for fuzzy identification)
+  samples_to_remove <- data_sample_names[!sapply(data_sample_names, function(x) any(agrep(x, ordination_sample_names, max.distance = 1)))]
   # Remove the extra samples from info
   if (length(samples_to_remove) > 0) {
     info <- info[!(rownames(info) %in% samples_to_remove), , drop = FALSE]
@@ -247,7 +252,7 @@ plot_rep_raref <- function(aligned_ordinations, consensus_coordinates, info, col
   
   # Combine aligned ordinations into one data frame for plotting
   aligned_df <- data.frame()
-
+  
   for (i in 1:length(aligned_ordinations)) {
     temp_df <- as.data.frame(aligned_ordinations[[i]])
     colnames(temp_df) <- c("Dim1", "Dim2")
