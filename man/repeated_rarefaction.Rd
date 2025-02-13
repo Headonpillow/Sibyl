@@ -2,7 +2,7 @@
 % Please edit documentation in R/repeated_rarefaction.R
 \name{repeated_rarefaction}
 \alias{repeated_rarefaction}
-\title{Perform Repeated Rarefaction and Generate an Ordination Plot}
+\title{Perform Repeated Rarefaction and Generate an Ordination Plot using PCA}
 \usage{
 repeated_rarefaction(
   input,
@@ -18,30 +18,40 @@ repeated_rarefaction(
 \arguments{
 \item{input}{A \code{phyloseq} object.}
 
-\item{repeats}{An integer. The number of rarefaction repeats. Default = 50.}
+\item{repeats}{An integer. The number of times to repeat rarefaction. Default = 50.}
 
-\item{threshold}{An integer. The threshold value for rarefaction. Default = 250.}
+\item{threshold}{An integer. The threshold value to use for rarefaction. Default = 250.}
 
-\item{colorb}{A string. Column name in \code{sample_data()} used for point colors.}
+\item{colorb}{A string. Column name in the \code{sample_data()} bundled with the
+supplied \code{phyloseq} object, used to color sample points.}
 
-\item{group}{A string. Column name in \code{sample_data()} used for grouping and ellipse calculation.}
+\item{group}{A string. Column name in \code{sample_data()} used for grouping the samples.
+The parameter is also used to calculate an ellipse around the points.
+The supplied value should coincide with the \code{group} when using the function
+\code{threshold_testing}, since it is on this parameter that also the clustering
+performance index is calculated.}
 
-\item{cloud}{A boolean. If \code{TRUE}, all repeated data points are shown. Default = FALSE.}
+\item{cloud}{A boolean. If \code{TRUE}, all repeated data points are shown.
+Otherwise, only the median points of each sample repetitions cloud are plotted.
+Default = FALSE.}
 
-\item{ellipse}{A boolean. If \code{TRUE}, confidence ellipses are drawn. Default = TRUE.}
+\item{ellipse}{A boolean. If \code{TRUE}, confidence ellipses around samples are
+from the same group are drawn. Default = TRUE.}
 
 \item{cores}{An integer. Number of cores to use for parallel processing. Default = 4.}
 }
 \value{
-A list containing:
+A list containing (While also showing the plot directly):
 \itemize{
 \item \code{repeats}: Number of repeats.
 \item \code{df_consensus_coordinates}: Median ordination positions.
 \item \code{df_all}: All ordination positions.
-\item \code{plot}: The generated ordination plot.
+\item \code{plot}: a \code{ggplot} object.
 }
 }
 \description{
 This function performs repeated rarefaction on a phyloseq object,
 computes ordination, and generates a PCA-based visualization.
+The same procedure is used from \code{threshold_testing} function when testing
+a range of thresholds.
 }

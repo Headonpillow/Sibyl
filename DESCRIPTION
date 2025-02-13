@@ -28,3 +28,7 @@ Imports:
     broom,
     magrittr,
 LazyData: true
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

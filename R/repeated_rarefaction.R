@@ -1,22 +1,32 @@
-#' Perform Repeated Rarefaction and Generate an Ordination Plot
+#' Perform Repeated Rarefaction and Generate an Ordination Plot using PCA
 #'
 #' This function performs repeated rarefaction on a phyloseq object, 
 #' computes ordination, and generates a PCA-based visualization.
+#' The same procedure is used from `threshold_testing` function when testing 
+#' a range of thresholds. 
 #'
 #' @param input A `phyloseq` object.
-#' @param repeats An integer. The number of rarefaction repeats. Default = 50.
-#' @param threshold An integer. The threshold value for rarefaction. Default = 250.
-#' @param colorb A string. Column name in `sample_data()` used for point colors.
-#' @param group A string. Column name in `sample_data()` used for grouping and ellipse calculation.
-#' @param cloud A boolean. If `TRUE`, all repeated data points are shown. Default = FALSE.
-#' @param ellipse A boolean. If `TRUE`, confidence ellipses are drawn. Default = TRUE.
+#' @param repeats An integer. The number of times to repeat rarefaction. Default = 50.
+#' @param threshold An integer. The threshold value to use for rarefaction. Default = 250.
+#' @param colorb A string. Column name in the `sample_data()` bundled with the 
+#' supplied `phyloseq` object, used to color sample points.
+#' @param group A string. Column name in `sample_data()` used for grouping the samples. 
+#' The parameter is also used to calculate an ellipse around the points. 
+#' The supplied value should coincide with the `group` when using the function
+#' `threshold_testing`, since it is on this parameter that also the clustering 
+#' performance index is calculated.
+#' @param cloud A boolean. If `TRUE`, all repeated data points are shown.
+#' Otherwise, only the median points of each sample repetitions cloud are plotted.
+#' Default = FALSE.
+#' @param ellipse A boolean. If `TRUE`, confidence ellipses around samples are 
+#' from the same group are drawn. Default = TRUE.
 #' @param cores An integer. Number of cores to use for parallel processing. Default = 4.
 #'
-#' @return A list containing:
+#' @return A list containing (While also showing the plot directly):
 #'   - `repeats`: Number of repeats.
 #'   - `df_consensus_coordinates`: Median ordination positions.
 #'   - `df_all`: All ordination positions.
-#'   - `plot`: The generated ordination plot.
+#'   - `plot`: a `ggplot` object.
 #'
 #' @importFrom phyloseq sample_data otu_table
 #' @importFrom dplyr mutate
@@ -37,7 +47,7 @@ repeated_rarefaction <- function(input, repeats = 50, threshold = 250, colorb="s
   
   # Make the rownames of the Phyloseq object a new "sample_id" variable for the sample data.
   # (this covers the case in which no sample_id column is present in the sample data)
-  # Then set it to a separate variable.
+  # Then set it to a separate variable because we need one.
   sample_data(physeq)$sample_id <- rownames(sample_data(physeq))
 
   # ============ Checks and warnings
@@ -221,8 +231,9 @@ ord_and_mean <- function(rarefied_matrix_list, repeats, cores = 4) {
 #' 
 plot_rep_raref <- function(aligned_ordinations, consensus_coordinates, info, color, group, cloud, ellipse, title) {
   
-  # This code handles the occurrence of samples below the rarefaction threshold
-  # which might have been removed from step1. 
+  # Following code handles the occurrence of samples below the rarefaction 
+  # threshold which might have been removed from step1:
+  
   # Extract sample names from info
   data_sample_names <- rownames(info)
   # Extract row names from the first data frame in aligned_ordinations
@@ -246,6 +257,8 @@ plot_rep_raref <- function(aligned_ordinations, consensus_coordinates, info, col
     temp_df[[group]] <- info[[group]]
     aligned_df <- rbind(aligned_df, temp_df)
   }
+  # Remove rownames from the df since they became redundant
+  rownames(aligned_df) <- NULL
 
   # Convert consensus_coordinates to a data frame
   consensus_df <- as.data.frame(consensus_coordinates)
