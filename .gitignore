@@ -4,6 +4,7 @@
 .DS_Store
 .Rbuildignore
 .Ruserdata
+*.html
 *.Rcheck
 *.gz
 inst/doc

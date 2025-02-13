@@ -1,11 +1,11 @@
-Package: HLCYG
+Package: Sibyl
 Title: How Low Can You Go?
 Version: 1.0
 Authors@R: c(
     person("Lorenzo", "Assentato", email = "assentato.lorenzo@gmail.com", role = c("aut", "cre")), 
     person("Magdalena", "Polder", email = "polder.magdalena@gmail.com", role = c("aut"))
     )
-Description: The HLCYG package provides a convenient way of testing a range of thresholds for rarefation, evaluating the effect of different values on ordination results, integrating with commonly used packages in microbial ecology. You provide phyloseq data with count data and sample information.
+Description: The Sibyl package provides a convenient way of testing a range of thresholds for rarefation, evaluating the effect of different values on ordination results, integrating with commonly used packages in microbial ecology. You provide phyloseq data with count data and sample information.
 License: GPL-3
 Language: en-US
 Encoding: UTF-8
