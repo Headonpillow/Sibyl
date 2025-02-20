@@ -15,8 +15,9 @@ Default = 5.}
 \value{
 A list containing:
 \itemize{
-\item \code{accumulation_plot}: A ggplot2 object visualizing the accumulation curves.
-\item \code{threshold_density}: A ggplot2 density plot of the 75\% ACE threshold.
+\item \code{accumulation_plot}: A ggplot2 object with all sites faceted.
+\item \code{threshold_density}: A ggplot2 density/histogram plot of the 75\% ACE thresholds.
+\item \code{individual_plots}: A list of ggplot2 objects, one per site.
 }
 }
 \description{

@@ -11,8 +11,9 @@
 #' Default = 5.
 #'
 #' @return A list containing:
-#'   - `accumulation_plot`: A ggplot2 object visualizing the accumulation curves.
-#'   - `threshold_density`: A ggplot2 density plot of the 75% ACE threshold.
+#'   - `accumulation_plot`: A ggplot2 object with all sites faceted.
+#'   - `threshold_density`: A ggplot2 density/histogram plot of the 75% ACE thresholds.
+#'   - `individual_plots`: A list of ggplot2 objects, one per site.
 #'
 #' @importFrom phyloseq otu_table
 #' @importFrom vegan rarecurve estimateR
@@ -34,115 +35,98 @@ accumulation_test <- function(input, step = 5) {
   
   # Create a df out of rarefaction curves
   df <- rarecurve(counts, step = step, tidy = TRUE)
-
+  
   # Estimate ACE from observed species
   res <- estimateR(as.matrix(counts))
   ace_df <- data.frame(
     Site = colnames(res),
     ACE  = res["S.ACE", ]   # row "S.ACE" contains the ACE estimate
   )
-  df_joined <- df %>%
-    left_join(ace_df, by = "Site")
+  df_joined <- dplyr::left_join(df, ace_df, by = "Site")
   
   # 1) Group by Site and nest the data
   df_nested <- df_joined %>%
-    group_by(Site) %>%
-    nest()
+    dplyr::group_by(Site) %>%
+    tidyr::nest()
   
   # 2) Fit a generic accumulation model to each Site's data
   df_fitted <- df_nested %>%
-    mutate(
-      fit = map(data, ~nls(
+    dplyr::mutate(
+      fit = purrr::map(data, ~ nls(
         # Force asymptote = ACE
         # So the formula is: Species ~ (ACE * Sample) / (b + Sample)
         Species ~ (ACE * Sample) / (b + Sample),
         data = .x,
-        start = list(b = median(.x$Sample, na.rm = TRUE))  # a guess for b
+        start = list(b = median(.x$Sample, na.rm = TRUE))
       ))
     )
   
-  # 3) Create a new data frame of Sample values over which we want a curve
+  # 3) Create a new data frame of Sample values for each site
   df_predicted <- df_fitted %>%
-    mutate(
-      newdata = map(data, ~tibble(
+    dplyr::mutate(
+      newdata = purrr::map(data, ~ tibble::tibble(
         Sample = seq(min(.x$Sample), max(.x$Sample), length.out = 100),
         ACE    = unique(.x$ACE)  # each site's ACE
       )),
-      preds = map2(fit, newdata, ~augment(.x, newdata = .y))
+      preds = purrr::map2(fit, newdata, ~ broom::augment(.x, newdata = .y))
     ) %>%
-    select(Site, preds) %>%
-    unnest(cols = preds)
+    dplyr::select(Site, preds) %>%
+    tidyr::unnest(cols = preds)
   
+  # Rename and keep needed columns
   df_final <- df_predicted %>%
-    rename(Species = .fitted) %>%
-    select(Site, Sample, Species)
+    dplyr::rename(Species = .fitted) %>%
+    dplyr::select(Site, Sample, Species)
   
+  # Gather parameter estimates from nls
   params_by_site <- df_fitted %>%
-    mutate(
-      params = map(fit, ~ broom::tidy(.x))  # tidy() gives a small tibble with term= "b", estimate= ...
+    dplyr::mutate(
+      params = purrr::map(fit, ~ broom::tidy(.x))
     ) %>%
-    select(Site, params) %>%
-    unnest(cols = params) %>%              # unnest to get one row per parameter per Site
-    left_join(ace_df, by = "Site")         # bring in the ACE column
+    dplyr::select(Site, params) %>%
+    tidyr::unnest(cols = params) %>%
+    dplyr::left_join(ace_df, by = "Site")
   
-  # Params_by_site has columns: Site, term, estimate.
-  # Pivot so that 'term' ('a' or 'b') becomes a column
+  # Convert parameters into wide format
   params_wide <- params_by_site %>%
-    select(Site, term, estimate, ACE) %>%
-    pivot_wider(names_from = term, values_from = estimate)
+    dplyr::select(Site, term, estimate, ACE) %>%
+    tidyr::pivot_wider(names_from = term, values_from = estimate) %>%
+    dplyr::mutate(
+      sample_75 = 3 * b # If the formula for 0.75 * ACE solves to 3*b
+    )
   
+  # Create a label vector for the faceted plot
   params_labeled <- params_wide %>%
-    mutate(
-      # Format your labels as you like
+    dplyr::mutate(
       label = paste0(
         Site, "\n",
         "ACE = ", round(ACE, 2), ", ",
-        "75% = ", round(b*3, 2)
+        "75% = ", round(sample_75, 2)
       )
     )
-  
-  params_wide <- params_wide %>%
-    mutate(
-      sample_75=3*b  #  If you solve the accumulation equation by 0.75 the 
-      #resulting x value as per bx is 3. 
-    )
-  
-  # Suppose Site is a character (or factor). We map each Site to its label
   labels_vector <- setNames(params_labeled$label, params_labeled$Site)
   
-  # We'll create a small data frame with just Site and sample_75
+  # We'll create a small data frame with just Site and sample_75 for vlines
   plateau_lines <- params_wide %>%
-    select(Site, sample_75)
+    dplyr::select(Site, sample_75)
   
+  # ------------------------------------------------------------------------------
+  # (1) Combined Facet Plot
+  # ------------------------------------------------------------------------------
   accumulation_plot <- ggplot() +
-    # 1) Original data (points) in red
+    # Original data (Observed)
     geom_point(
       data = df,
-      aes(
-        x = Sample,
-        y = Species,
-        group = Site,            # group by SITE so each site's points connect properly if lines were used
-        color = "Observed"       # a fixed label to distinguish in the legend
-      ),
+      aes(x = Sample, y = Species, group = Site, color = "Observed"),
       alpha = 0.7
     ) +
-    # 2) Fitted data (lines) in blue
+    # Fitted lines
     geom_line(
       data = df_final,
-      aes(
-        x = Sample,
-        y = Species,
-        group = Site,
-        color = "Fitted"         # a fixed label to distinguish in the legend
-      ),
+      aes(x = Sample, y = Species, group = Site, color = "Fitted"),
       size = 1
     ) +
-    # 3) Manually set colors for these two labels
-    scale_color_manual(
-      name = "Data Type",        # Legend title
-      values = c("Observed" = "red", "Fitted" = "blue")
-    ) +
-    # 4) Vertical dotted line at sample_75 for each SITE
+    # Vertical dotted lines at 75% threshold
     geom_vline(
       data = plateau_lines,
       aes(xintercept = sample_75),
@@ -150,12 +134,13 @@ accumulation_test <- function(input, step = 5) {
       color = "black",
       size = 1
     ) +
-    # 5) Facet if desired
-    facet_wrap(
-      ~ Site,
-      scales = "free_x",
-      labeller = labeller(Site = labels_vector)
+    # Color legend
+    scale_color_manual(
+      name = "Data Type",
+      values = c("Observed" = "red", "Fitted" = "blue")
     ) +
+    # Facet with custom labels
+    facet_wrap(~ Site, scales = "free_x", labeller = labeller(Site = labels_vector)) +
     theme_minimal() +
     labs(
       title = "Species Accumulation Curves",
@@ -163,22 +148,93 @@ accumulation_test <- function(input, step = 5) {
       y = "Species Count"
     )
   
-  #####
-  params_by_site <- params_by_site %>%
-    mutate(three_b = 3 * estimate)
-  
   # ------------------------------------------------------------------------------
-  # 2) Plot a histogram of 'three_b' with a density curve, flipping coordinates
-  #    so that 'three_b' is on the Y axis.
+  # (2) Threshold Density Plot
   # ------------------------------------------------------------------------------
   threshold_density <- ggplot(params_wide, aes(x = sample_75)) +
-    geom_histogram(aes(y = after_stat(density)), bins = 30, fill = "skyblue", color = "skyblue", alpha = 0.6) +
-    # Density line: also map y=..density.., same variable on x
-    geom_density(aes(y = after_stat(density)), color = "maroon", linewidth = 1) +
+    geom_histogram(
+      aes(y = after_stat(density)),
+      bins = 30,
+      fill = "skyblue",
+      color = "skyblue",
+      alpha = 0.6
+    ) +
+    geom_density(
+      aes(y = after_stat(density)),
+      color = "maroon",
+      linewidth = 1
+    ) +
     theme_minimal() +
     labs(
-      x = "75%",
+      x = "75% ACE Threshold",
+      y = "Density",
+      title = "Distribution of 75% ACE Thresholds"
     )
   
-  return(list(accumulation_plot = accumulation_plot, threshold_density = threshold_density))
+  # ------------------------------------------------------------------------------
+  # (3) List of Individual Plots (one per Site)
+  # ------------------------------------------------------------------------------
+  unique_sites <- unique(df_final$Site)
+  
+  individual_plots <- lapply(unique_sites, function(st) {
+    # Filter the data for this Site
+    site_points <- df %>% dplyr::filter(Site == st)
+    site_fitted <- df_final %>% dplyr::filter(Site == st)
+    param_row   <- params_wide %>% dplyr::filter(Site == st)
+    
+    # Build a single-site plot
+    p <- ggplot() +
+      # Observed data
+      geom_point(
+        data = site_points,
+        aes(x = Sample, y = Species),
+        color = "red",
+        alpha = 0.7
+      ) +
+      # Fitted line
+      geom_line(
+        data = site_fitted,
+        aes(x = Sample, y = Species),
+        color = "blue",
+        size = 1
+      ) +
+      # Vertical line for 75% threshold
+      geom_vline(
+        aes(xintercept = param_row$sample_75),
+        linetype = "dotted",
+        color = "black",
+        size = 1
+      ) +
+      theme_minimal() +
+      labs(
+        title = paste("Accumulation Curve for Sample:", st),
+        subtitle = paste0(
+          "ACE = ", round(param_row$ACE, 2),
+          " | 75% = ", round(param_row$sample_75, 2)
+        ),
+        x = "Sample Size",
+        y = "Species Count"
+      )
+    
+    p
+  })
+  
+  output <- list(accumulation_plot = accumulation_plot,
+                 threshold_density = threshold_density,
+                 individual_plots = individual_plots)
+  class(output) <- "accumulation_test"
+  return(output)
+}
+
+#' Print Method for `accumulation_test` Object
+#'
+#' @param x An `accumulation_test` object.
+#' @param ... Additional arguments (not used).
+#'
+#' @export
+#' 
+print.accumulation_test <- function(x, ...) {
+  # Print only the accumulation plot
+  print(x[["accumulation_plot"]])
+  invisible(x)  # standard practice for print methods
 }

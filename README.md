@@ -1,8 +1,11 @@
-# Sybil
+# Sibyl
 
-Sybil is an R package that provides a convenient way of testing a range of 
-thresholds for rarefaction, evaluating the effect of different values 
-on ordination results.
+Sibyl is a package designed to test different rarefaction thresholds when 
+normalizing microbial abundance data.  
+
+When performing Principal Component Analysis (PCA) and other types of ordination, 
+it is necessary to make sure of choosing a rarefaction threshold which does not 
+impact the structure of the data, or our conclusions, during exploratory analysis.  
 
 # Installation
 
@@ -24,3 +27,9 @@ BiocManager::install("Headonpillow/Sibyl",
 dependencies = TRUE, build_vignettes = TRUE, force = TRUE)
 
 ```
+
+# Examples
+
+
+
+# Why this package was created
