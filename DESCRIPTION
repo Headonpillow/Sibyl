@@ -1,5 +1,5 @@
 Package: Sibyl
-Title: How Low Can You Go?
+Title: Sibyl
 Version: 1.0
 Authors@R: c(
     person("Lorenzo", "Assentato", email = "assentato.lorenzo@gmail.com", role = c("aut", "cre")), 
@@ -27,7 +27,7 @@ Imports:
     purrr,
     broom,
     magrittr,
-LazyData: true
+LazyData: false
 Suggests: 
     knitr,
     rmarkdown,
