@@ -8,4 +8,5 @@
 *.Rcheck
 *.gz
 inst/doc
-vignettes/
+vignettes/my-vignette_files
+vignettes/my-vignette_cache
