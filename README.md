@@ -19,9 +19,9 @@ if (!require("BiocManager", quietly = TRUE)) {
 BiocManager::install(version = "3.20")
 ```
 
-### GitHub
+### GitHub (development version)
 
-You can install the latest version of **Sibyl** from 
+You can install the latest development version of **Sibyl** from 
 [Github](https://github.com/Headonpillow/Sibyl) with:
 
 ``` r
