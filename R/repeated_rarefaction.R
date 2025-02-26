@@ -49,6 +49,10 @@ repeated_rarefaction <- function(input, repeats = 50, threshold = 250, colorb="s
   # (this covers the case in which no sample_id column is present in the sample data)
   # Then set it to a separate variable because we need one.
   sample_data(physeq)$sample_id <- rownames(sample_data(physeq))
+  
+  # Extract all sample IDs from the original phyloseq object (if samples are later
+  # removed because of unmet rarefaction threshold)
+  sample_ids <- rownames(phyloseq::sample_data(input))
 
   # ============ Checks and warnings
 
@@ -62,10 +66,6 @@ repeated_rarefaction <- function(input, repeats = 50, threshold = 250, colorb="s
   }
 
   if (!(is.double(repeats))){
-    stop(paste("Input for repeats: '", repeats, "' is not an integer.", sep=""))
-  }
-
-  if (!(repeats == round(repeats))){
     stop(paste("Input for repeats: '", repeats, "' is not an integer.", sep=""))
   }
 

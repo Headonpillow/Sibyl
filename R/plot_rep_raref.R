@@ -25,15 +25,21 @@
 #' 
 plot_rep_raref <- function(aligned_ordinations, consensus_coordinates, info, color, group, cloud, ellipse, title) {
   
-  # Following code (237-246) handles the occurrence of samples below the rarefaction 
+  # =========== Handle missing samples 
   # threshold which might have been removed from step1:
   # Extract sample names from info
   data_sample_names <- rownames(info)
+
+  # Format the input, which differs if using `repeated_rarefaction` or `test_threshold`
+  if (is.numeric(aligned_ordinations[[1]])) {
+    aligned_ordinations <- lapply(aligned_ordinations, function(x) {
+      sample_names <- rownames(x) 
+      data.frame(sample = sample_names, V1 = x[,1], V2 = x[,2])
+    })
+  }
   
-  # if it's a data frame
   # Extract row names from the first data frame in aligned_ordinations
-  ##ordination_sample_names <- rownames(aligned_ordinations[[1]])
-  ordination_sample_names <- aligned_ordinations[["1"]]$sample
+  ordination_sample_names <- aligned_ordinations[[1]]$sample
   
   # Identify samples to remove using exact matching
   samples_to_remove <- data_sample_names[!data_sample_names %in% ordination_sample_names]
@@ -49,8 +55,6 @@ plot_rep_raref <- function(aligned_ordinations, consensus_coordinates, info, col
   for (i in 1:length(aligned_ordinations)) {
     temp_df <- as.data.frame(aligned_ordinations[[i]])
     colnames(temp_df) <- c("sample_id", "Dim1", "Dim2")
-    ##temp_df$sample_id <- rownames(aligned_ordinations[[i]])
-    ##temp_df$sample_id <- aligned_ordinations[[i]]$sample
     temp_df$ordination <- paste0("Ordination", i)
     temp_df[[color]] <- info[[color]]
     temp_df[[group]] <- info[[group]]
@@ -63,7 +67,6 @@ plot_rep_raref <- function(aligned_ordinations, consensus_coordinates, info, col
   # Convert consensus_coordinates to a data frame
   consensus_df <- as.data.frame(consensus_coordinates)
   colnames(consensus_df) <- c("Dim1", "Dim2")
-  ##consensus_df$sample_id <- rownames(aligned_ordinations[[1]])
   consensus_df$sample_id <- aligned_ordinations[["1"]]$sample
   
   # Determine how many colors are needed to plot the levels of the color variable

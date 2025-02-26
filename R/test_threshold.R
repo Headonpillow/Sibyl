@@ -1,6 +1,6 @@
 #' Test Different Rarefaction Thresholds Using Repeated Rarefaction
 #'
-#' This function is a wrapper around `repeated_rarefaction` that evaluates 
+#' This function is a wrapper around the steps of `repeated_rarefaction` that evaluates 
 #' different rarefaction thresholds. It runs repeated rarefactions on a 
 #' `phyloseq` object and calculates clustering performance using the Calinski-Harabasz index.
 #' Moreover, the function also calculates the average pairwise distance for each sample 
@@ -62,6 +62,7 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
   # Make the rownames of the Phyloseq object a new "sample_id" variable for the sample data.
   # (this covers the case in which no sample_id column is present in the sample data)
   # Then set it to a separate variable, and we need one.
+  ### TODO: when the sample_id does not exist tho
   sample_data(physeq)$sample_id <- rownames(sample_data(physeq))
   
   # Extract all sample IDs from the original phyloseq object (if samples are later
@@ -72,6 +73,10 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
   if (!(group %in% names(sample_data(physeq)))) {
     stop(paste("'",group,"' is not a column name in the sample information in the inputed phyloseq object.
                   repeated_rarefaction needs an existing column to group samples by.", sep=""))
+  }
+  
+  if (!(is.double(repeats))){
+    stop(paste("Input for repeats: '", repeats, "' is not an integer.", sep=""))
   }
   
   # Determine the thresholds to loop over between min and max and specified step.
@@ -190,9 +195,6 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
       rownames(df) <- NULL
       df <- cbind("sample" = rownames(scaled_points[[current_key]]), df)
       
-      ##rownames(df) <- 
-      ##df <- as_tibble(scaled_points[[current_key]], rownames = "sample")
-      
       # Split into repeats
       n_points <- nrow(df)
       # each threshold run had 'repeats' ordinations, so we split equally
@@ -215,8 +217,6 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
       temp_df <- as.data.frame(norm_consensus)
       temp_df$sample_id <- split_reps[["1"]]$sample
       rownames(temp_df) <- split_reps[["1"]]$sample
-      #temp_df$sample_id <- rownames(split_reps[[1]])
-      #rownames(temp_df) <- rownames(split_reps[[1]])
       temp_df[[group]] <- info[[group]]
       norm_consensus_df <- rbind(temp_df)
       
