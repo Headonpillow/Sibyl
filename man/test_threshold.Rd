@@ -50,7 +50,7 @@ sample repetition attempts (for each threshold).
 }
 }
 \description{
-This function is a wrapper around \code{repeated_rarefaction} that evaluates
+This function is a wrapper around the steps of \code{repeated_rarefaction} that evaluates
 different rarefaction thresholds. It runs repeated rarefactions on a
 \code{phyloseq} object and calculates clustering performance using the Calinski-Harabasz index.
 Moreover, the function also calculates the average pairwise distance for each sample

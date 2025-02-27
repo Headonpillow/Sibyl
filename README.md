@@ -1,4 +1,7 @@
-# Sibyl
+# Sibyl <img src="man/figures/logo.svg" align="right" height="138" /></a>
+
+<!-- badges: start -->
+<!-- badges: end -->
 
 **Sibyl** is a package designed to test different rarefaction thresholds when 
 normalizing microbial abundance data.  
