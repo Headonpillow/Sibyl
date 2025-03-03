@@ -21,8 +21,8 @@
 #'
 #' @importFrom ggplot2 ggplot aes geom_point stat_ellipse theme_minimal 
 #' ggtitle xlab ylab theme element_text
-#' @export
 #' 
+#' @keywords internal
 plot_rep_raref <- function(aligned_ordinations, consensus_coordinates, info, color, group, cloud, ellipse, title) {
   
   # =========== Handle missing samples 

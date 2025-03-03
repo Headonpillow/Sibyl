@@ -46,3 +46,4 @@ to threshold).
 Creates a PCoA-based visualization of rarefied ordinations, calculating median cluster points.
 This is the third step of the algorithm.
 }
+\keyword{internal}

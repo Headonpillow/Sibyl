@@ -47,7 +47,7 @@
 #' @importFrom phyloseq sample_data otu_table sample_data<-
 #' @importFrom vegan vegdist
 #' @importFrom clusterSim index.G1
-#' @importFrom dplyr mutate
+#' @importFrom dplyr mutate group_by summarise ungroup
 #' @importFrom ggplot2 ggplot aes geom_point labs geom_smooth xlim ylim
 #' @export
 #' 
@@ -88,6 +88,14 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
   
   # Initialize a list to store avg_distances data frames for each repeat amount.
   avg_distances_list <- list()
+
+  # ============= Set up warning collection for samples which do not meet threshold.
+  warningCollector <- new.env()
+  warningCollector$table <- data.frame(
+    Sample_ID = character(0),
+    Threshold = numeric(0),
+    stringsAsFactors = FALSE
+  )
   
   for (y in repeats) {
     # Create lists to store ordination points coordinates for a specific repeat 
@@ -100,9 +108,8 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
     for (x in thresholds) {
       message(paste("Running with", y, "repeats and", x, "threshold"))
       
-      step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold = x, repeats = y, warning_collector = list())
+      step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold = x, repeats = y, warning_collector = warningCollector)
       step2 <- ord_and_mean(step1$rarefied_matrix_list, repeats)
-      
       # ============= AVERAGE PAIRWISE DISTANCE CALCULATION (THIS THRESHOLD)
       
       # Determine which samples are present in the ordination results.
@@ -236,6 +243,16 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
       index_data <- rbind(index_data, c(toString(y), x, index))
     }
     
+  }
+  
+  # ============= WARNINGS
+  if (nrow(warningCollector$table) > 0) {
+    pooledTable <- warningCollector$table %>%
+      group_by(Sample_ID) %>%
+      summarise(Threshold = min(Threshold)) %>%
+      ungroup()
+    warning("The following samples have been removed during the analysis:\n",
+            paste(capture.output(print(as.data.frame(pooledTable))), collapse = "\n"))
   }
   
   # Format the index_data matrix for plotting

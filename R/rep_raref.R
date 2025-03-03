@@ -11,8 +11,8 @@
 #'   - `rarefied_matrix_list`: A list of rarefied matrices.
 #'
 #' @importFrom vegan rrarefy
-#' @export
 #' 
+#' @keywords internal
 rep_raref <- function(count, threshold, repeats, ...) {
   hidden_args <- list(...)
   
@@ -32,9 +32,14 @@ rep_raref <- function(count, threshold, repeats, ...) {
   if (length(below_threshold) > 0) {
     # Retrieve sample names below threshold
     sample_names <- names(below_threshold)
+    warning_table <- data.frame(
+      Sample_ID = sample_names,
+      Threshold = threshold,
+      stringsAsFactors = FALSE
+      )
     # Check if a warning collector has been setup, add the sample to it.
     if (!is.null(hidden_args$warning_collector)) {
-      hidden_args$warning_collector$warnings <- c(hidden_args$warning_collector$warnings, sample_names)
+      hidden_args$warning_collector$table <- rbind(hidden_args$warning_collector$table, warning_table)
     }
     else{
       warning("The following samples have row sums less than ", threshold, " and have been removed: ", paste(sample_names, collapse = ", "))

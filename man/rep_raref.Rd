@@ -4,7 +4,7 @@
 \alias{rep_raref}
 \title{Perform Repeated Rarefaction}
 \usage{
-rep_raref(count, threshold, repeats)
+rep_raref(count, threshold, repeats, ...)
 }
 \arguments{
 \item{count}{A matrix. OTU count table.}
@@ -23,3 +23,4 @@ A list containing:
 This function performs repeated rarefaction on a count table.
 This is the first step of the algorithm.
 }
+\keyword{internal}

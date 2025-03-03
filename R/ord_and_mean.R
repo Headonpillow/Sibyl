@@ -18,7 +18,8 @@
 #' @importFrom foreach foreach %dopar%
 #' @importFrom geomorph mshape
 #' @importFrom stats cmdscale
-#' @export
+#' 
+#' @keywords internal
 ord_and_mean <- function(rarefied_matrix_list, repeats, cores = 4) {
   
   #========================= ordinations and plots generation

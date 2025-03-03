@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 
 library(ggplot2)
-devtools::load_all(".")
+library(Sibyl)
 ```
 
 # Introduction
@@ -115,8 +115,7 @@ data(larvae)
 ```
 
 ```{r, message=FALSE, cache=TRUE, include=FALSE}
-data("larvae")
-
+data(larvae)
 threshold_test_result_ethiopia <- test_threshold(larvae, repeats = 100, t_min = 100, t_max = 1000, t_step = 20, group = "breeding_site_type", cores = 16)
 ```
 
