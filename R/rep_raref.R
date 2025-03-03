@@ -13,7 +13,9 @@
 #' @importFrom vegan rrarefy
 #' @export
 #' 
-rep_raref <- function(count, threshold, repeats) {
+rep_raref <- function(count, threshold, repeats, ...) {
+  hidden_args <- list(...)
+  
   if (repeats == 0) {
     warning("repeats can't be 0. It needs to be a positive integer. Performs rarefaction without repetition.")
   }
@@ -28,8 +30,17 @@ rep_raref <- function(count, threshold, repeats) {
   
   # Print a warning with the problematic sample indices
   if (length(below_threshold) > 0) {
-    warning("The following samples have row sums less than ", threshold, " and have been removed: ", paste(names(below_threshold), collapse = ", "))
+    # Retrieve sample names below threshold
+    sample_names <- names(below_threshold)
+    # Check if a warning collector has been setup, add the sample to it.
+    if (!is.null(hidden_args$warning_collector)) {
+      hidden_args$warning_collector$warnings <- c(hidden_args$warning_collector$warnings, sample_names)
+    }
+    else{
+      warning("The following samples have row sums less than ", threshold, " and have been removed: ", paste(sample_names, collapse = ", "))
+    }
   }
+  
   # Remove problematic samples
   count_filtered <- count[row_totals >= threshold, , drop = FALSE]
   count <- count_filtered

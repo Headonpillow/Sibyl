@@ -100,7 +100,7 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
     for (x in thresholds) {
       message(paste("Running with", y, "repeats and", x, "threshold"))
       
-      step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold = x, repeats = y)
+      step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold = x, repeats = y, warning_collector = list())
       step2 <- ord_and_mean(step1$rarefied_matrix_list, repeats)
       
       # ============= AVERAGE PAIRWISE DISTANCE CALCULATION (THIS THRESHOLD)
