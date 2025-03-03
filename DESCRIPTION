@@ -6,7 +6,7 @@ Authors@R: c(
     person("Magdalena", "Polder", email = "polder.magdalena@gmail.com", role = c("aut"))
     )
 Description: The Sibyl package provides a convenient way of testing a range of thresholds for rarefation, evaluating the effect of different values on ordination results, integrating with commonly used packages in microbial ecology. You provide phyloseq data with count data and sample information.
-License: GPL-3
+License: GPL (>= 3)
 Language: en-US
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
