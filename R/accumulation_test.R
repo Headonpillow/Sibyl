@@ -64,7 +64,7 @@ accumulation_test <- function(input, step = 5) {
   # 3) Create a new data frame of Sample values for each site
   df_predicted <- df_fitted %>%
     dplyr::mutate(
-      newdata = purrr::map(data, ~ tibble::tibble(
+      newdata = purrr::map(data, ~ dplyr::tibble(
         Sample = seq(min(.x$Sample), max(.x$Sample), length.out = 100),
         ACE    = unique(.x$ACE)  # each site's ACE
       )),
@@ -124,7 +124,7 @@ accumulation_test <- function(input, step = 5) {
     geom_line(
       data = df_final,
       aes(x = Sample, y = Species, group = Site, color = "Fitted"),
-      size = 1
+      linewidth = 1
     ) +
     # Vertical dotted lines at 75% threshold
     geom_vline(
@@ -132,7 +132,7 @@ accumulation_test <- function(input, step = 5) {
       aes(xintercept = sample_75),
       linetype = "dotted",
       color = "black",
-      size = 1
+      linewidth = 1
     ) +
     # Color legend
     scale_color_manual(
@@ -196,14 +196,14 @@ accumulation_test <- function(input, step = 5) {
         data = site_fitted,
         aes(x = Sample, y = Species),
         color = "blue",
-        size = 1
+        linewidth = 1
       ) +
       # Vertical line for 75% threshold
       geom_vline(
         aes(xintercept = param_row$sample_75),
         linetype = "dotted",
         color = "black",
-        size = 1
+        linewidth = 1
       ) +
       theme_minimal() +
       labs(

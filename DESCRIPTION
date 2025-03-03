@@ -27,11 +27,13 @@ Imports:
     purrr,
     broom,
     magrittr,
-LazyData: false
+LazyData: true
 Suggests: 
     knitr,
     rmarkdown,
     ggpubr,
+    vdiffr,
+    withr,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3

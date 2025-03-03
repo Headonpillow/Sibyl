@@ -7,7 +7,7 @@
 avg_pairwise_dist_plot(avg_distances)
 }
 \arguments{
-\item{input}{A dataframe of average distances obtained from \code{threshold_testing}.}
+\item{avg_distances}{A dataframe of average distances obtained from \code{threshold_testing}.}
 }
 \value{
 A ggplot2 object showing average pairwise distances across thresholds.

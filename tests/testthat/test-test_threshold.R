@@ -1,7 +1,7 @@
 withr::local_seed(1234)
 data(adults)
 data(larvae)
-test_that("repeated_rarefaction_works", {
+test_that("testing_threshold_works", {
   # Test normal behavior with a single threshold
   result <- test_threshold(adults, repeats = 10, t_min = 100, t_max = 200, t_step = 10, group = "location")
   vdiffr::expect_doppelganger("TT_single_threshold", result$index_plot)

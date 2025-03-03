@@ -3,7 +3,7 @@
 #' This function draws a plot of `avg_distances` generated from the 
 #' `threshold_testing` function. 
 #'
-#' @param input A dataframe of average distances obtained from `threshold_testing`.
+#' @param avg_distances A dataframe of average distances obtained from `threshold_testing`.
 #'
 #' @return A ggplot2 object showing average pairwise distances across thresholds.
 #'

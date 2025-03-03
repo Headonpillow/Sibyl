@@ -1,7 +1,7 @@
 withr::local_seed(1234)
 data(adults)
 data(larvae)
-test_that("repeated_rarefaction_works", {
+test_that("APD_calculation_works", {
   # Test normal behavior
   result <- test_threshold(adults, repeats = 10, t_min = 100, t_max = 200, t_step = 10, group = "location")
   vdiffr::expect_doppelganger("Test_APD_plot", avg_pairwise_dist_plot(result$avg_distances$repeat_number_10))

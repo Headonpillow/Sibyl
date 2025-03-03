@@ -4,7 +4,7 @@
 \alias{ord_and_mean}
 \title{Perform Ordination and Compute Consensus Coordinates}
 \usage{
-ord_and_mean(rarefied_matrix_list, repeats, cores = 4)
+ord_and_mean(rarefied_matrix_list, repeats, cores = 2)
 }
 \arguments{
 \item{rarefied_matrix_list}{A list of rarefied count tables.}

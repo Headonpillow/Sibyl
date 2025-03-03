@@ -11,9 +11,12 @@
 #'   - `rarefied_matrix_list`: A list of rarefied matrices.
 #'
 #' @importFrom vegan rrarefy
+#' @importFrom parallel makeCluster stopCluster
+#' @importFrom doParallel registerDoParallel
+#' @importFrom foreach foreach %dopar%
 #' 
 #' @keywords internal
-rep_raref <- function(count, threshold, repeats, ...) {
+rep_raref <- function(count, threshold, repeats, cores = 2, ...) {
   hidden_args <- list(...)
   
   if (repeats == 0) {
@@ -53,11 +56,17 @@ rep_raref <- function(count, threshold, repeats, ...) {
   # Set up working files
   rarefied_matrices <- list()
   
+  # Set up parallel backend
+  cl <- makeCluster(cores)
+  registerDoParallel(cl)
+  
   # Perform repeated rarefaction and store the normalized results in a list
-  for (i in 1:repeats) {
-    rarefied_count <- rrarefy(count, sample = threshold)
-    rarefied_matrices[[i]] <- rarefied_count
+  rarefied_matrices <- foreach(i = 1:repeats, .packages = "vegan") %dopar% {
+    rrarefy(count, sample = threshold)
   }
+  
+  # Stop the cluster
+  stopCluster(cl)
   
   return(invisible(list("rarefied_matrix_list"=rarefied_matrices)))
 }

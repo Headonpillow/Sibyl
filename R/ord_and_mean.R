@@ -20,7 +20,7 @@
 #' @importFrom stats cmdscale
 #' 
 #' @keywords internal
-ord_and_mean <- function(rarefied_matrix_list, repeats, cores = 4) {
+ord_and_mean <- function(rarefied_matrix_list, repeats, cores = 2) {
   
   #========================= ordinations and plots generation
   

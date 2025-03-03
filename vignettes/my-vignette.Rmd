@@ -51,8 +51,6 @@ The **Abundance Coverage Estimator** value (ACE) is calculated for each sample a
 > Since in reality these samples never reach their ACE value, which is always way over their actual sequencing depth (due to it being an estimation), the "plateau" 75% threshold is to be considered just a guidance estimate. **It is not an empiric measure**, therefore should not be treated as such.
 
 ```{r, warning=FALSE, cache=TRUE}
-data("adults")
-
 accumulation_result <- accumulation_test(adults, step = 5)
 ```
 
@@ -115,7 +113,6 @@ data(larvae)
 ```
 
 ```{r, message=FALSE, cache=TRUE, include=FALSE}
-data(larvae)
 threshold_test_result_ethiopia <- test_threshold(larvae, repeats = 100, t_min = 100, t_max = 1000, t_step = 20, group = "breeding_site_type", cores = 16)
 ```
 

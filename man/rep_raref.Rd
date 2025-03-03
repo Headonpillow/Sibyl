@@ -4,7 +4,7 @@
 \alias{rep_raref}
 \title{Perform Repeated Rarefaction}
 \usage{
-rep_raref(count, threshold, repeats, ...)
+rep_raref(count, threshold, repeats, cores = 2, ...)
 }
 \arguments{
 \item{count}{A matrix. OTU count table.}

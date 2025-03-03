@@ -12,7 +12,7 @@ repeated_rarefaction(
   group = "sample_id",
   cloud = TRUE,
   ellipse = FALSE,
-  cores = 4
+  cores = 2
 )
 }
 \arguments{
@@ -38,7 +38,7 @@ Default = FALSE.}
 \item{ellipse}{A boolean. If \code{TRUE}, confidence ellipses around samples are
 from the same group are drawn. Default = TRUE.}
 
-\item{cores}{An integer. Number of cores to use for parallel processing. Default = 4.}
+\item{cores}{An integer. Number of cores to use for parallel processing. Default = 2.}
 }
 \value{
 A list containing (While also showing the plot directly):
