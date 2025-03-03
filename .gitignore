@@ -1,12 +1,10 @@
-.Rproj.user
 .Rhistory
 .RData
-.DS_Store
 .Rbuildignore
-.Ruserdata
 *.html
 *.Rcheck
 *.gz
+todo
 inst/doc
 vignettes/my-vignette_files
 vignettes/my-vignette_cache
