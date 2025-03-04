@@ -27,7 +27,7 @@ Imports:
     tidyr,
     purrr,
     broom,
-    magrittr,
+    magrittr
 LazyData: true
 Suggests: 
     knitr,
