@@ -22,6 +22,7 @@
 #' for grouping the samples. It is also on this value that the Calinski-Harabasz
 #' index is calculated.
 #' @param cores An integer. Number of cores for parallel processing. Default = 2.
+#' @param ... Additional arguments to be passed to the function.
 #' 
 #' @details
 #' Higher index values are better, and the plateauing of the index values when 
@@ -52,7 +53,10 @@
 #' @importFrom utils capture.output
 #' @export
 #' 
-test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step = 5, group = "sample_id", cores = 2) {
+test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step = 5, group = "sample_id", cores = 2, ...) {
+  # list hidden arguments
+  hidden_args <- list(...)
+  
   # Check if input is a Phyloseq object
   if (inherits(input, "phyloseq")) {
     physeq <- input
@@ -108,8 +112,12 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
     
     for (x in thresholds) {
       message(paste("Running with", y, "repeats and", x, "threshold"))
-      
-      step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold = x, repeats = y, cores = cores, warning_collector = warningCollector)
+      # Setting the seed might be done for testing purposes
+      if(!is.null(hidden_args$seed)){
+        step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold = x, repeats = y, cores = cores, warning_collector = warningCollector, seed = hidden_args$seed)
+      } else {
+        step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold = x, repeats = y, cores = cores, warning_collector = warningCollector)
+      }
       step2 <- ord_and_mean(step1$rarefied_matrix_list, repeats, cores = cores)
       # ============= AVERAGE PAIRWISE DISTANCE CALCULATION (THIS THRESHOLD)
       

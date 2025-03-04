@@ -87,7 +87,7 @@ Optionally, the repeat number can be a vector of different values. In that case 
 > The choice of a range to test your data on should always be made considering the compromise between **sample completeness** (how well described is the sample microbial community according to the previous analysis), and how many samples are excluded or included when changing rarefaction threshold.
 
 ```{r, message=FALSE, cache=TRUE}
-threshold_test_result <- test_threshold(adults, repeats = 100, t_min = 100, t_max = 2000, t_step = 20, group = "location", cores = 16)
+threshold_test_result <- test_threshold(adults, repeats = 100, t_min = 100, t_max = 2000, t_step = 20, group = "location", cores = 4)
 ```
 
 This function produces a series of results which can be visualized immediately or through auxiliary functions.
@@ -113,7 +113,7 @@ data(larvae)
 ```
 
 ```{r, message=FALSE, cache=TRUE, include=FALSE}
-threshold_test_result_ethiopia <- test_threshold(larvae, repeats = 100, t_min = 100, t_max = 1000, t_step = 20, group = "breeding_site_type", cores = 16)
+threshold_test_result_ethiopia <- test_threshold(larvae, repeats = 100, t_min = 100, t_max = 1000, t_step = 20, group = "breeding_site_type", cores = 4)
 ```
 
 ```{r, echo = FALSE, out.width="98%", out.height=500, fig.width=8, fig.height=6, dpi = 500}

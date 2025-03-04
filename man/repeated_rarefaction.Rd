@@ -12,7 +12,8 @@ repeated_rarefaction(
   group = "sample_id",
   cloud = TRUE,
   ellipse = FALSE,
-  cores = 2
+  cores = 2,
+  ...
 )
 }
 \arguments{
@@ -39,6 +40,8 @@ Default = FALSE.}
 from the same group are drawn. Default = TRUE.}
 
 \item{cores}{An integer. Number of cores to use for parallel processing. Default = 2.}
+
+\item{...}{Additional arguments to be passed to the function.}
 }
 \value{
 A list containing (While also showing the plot directly):

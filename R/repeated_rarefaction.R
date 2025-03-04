@@ -21,6 +21,7 @@
 #' @param ellipse A boolean. If `TRUE`, confidence ellipses around samples are 
 #' from the same group are drawn. Default = TRUE.
 #' @param cores An integer. Number of cores to use for parallel processing. Default = 2.
+#' @param ... Additional arguments to be passed to the function.
 #'
 #' @return A list containing (While also showing the plot directly):
 #'   - `repeats`: Number of repeats.
@@ -37,7 +38,10 @@
 #' @importFrom ggplot2 ggplot aes geom_point stat_ellipse theme_minimal ggtitle xlab ylab
 #' @export
 #' 
-repeated_rarefaction <- function(input, repeats = 50, threshold = 250, colorb="sample_id", group="sample_id", cloud = TRUE, ellipse = FALSE, cores = 2) {
+repeated_rarefaction <- function(input, repeats = 50, threshold = 250, colorb="sample_id", group="sample_id", cloud = TRUE, ellipse = FALSE, cores = 2, ...) {
+  # list hidden arguments
+  hidden_args <- list(...)
+  
   # Check if input is a Phyloseq object
   if (inherits(input, "phyloseq")) {
     physeq <- input
@@ -79,7 +83,12 @@ repeated_rarefaction <- function(input, repeats = 50, threshold = 250, colorb="s
   }
 
   # Perform the different steps of the repeated rarefaction algorithm
-  step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold, repeats, cores = cores)
+  # Setting the seed might be done for testing purposes
+  if(!is.null(hidden_args$seed)){
+    step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold, repeats, cores = cores, seed = hidden_args$seed)
+  } else {
+      step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold, repeats, cores = cores)
+  }
   step2 <- ord_and_mean(step1$rarefied_matrix_list, repeats, cores = cores)
   step3 <- plot_rep_raref(step2$aligned_ordinations, step2$consensus_coordinates, sample_data(physeq), colorb, group, cloud, ellipse, "Aligned Ordinations with Consensus Overlaid")
 

@@ -11,7 +11,8 @@ test_threshold(
   t_max = 250,
   t_step = 5,
   group = "sample_id",
-  cores = 2
+  cores = 2,
+  ...
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ for grouping the samples. It is also on this value that the Calinski-Harabasz
 index is calculated.}
 
 \item{cores}{An integer. Number of cores for parallel processing. Default = 2.}
+
+\item{...}{Additional arguments to be passed to the function.}
 }
 \value{
 A list containing:

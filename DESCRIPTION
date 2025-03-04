@@ -22,6 +22,7 @@ Imports:
     geomorph,
     vegan,
     doParallel,
+    doRNG,
     foreach,
     tidyr,
     purrr,

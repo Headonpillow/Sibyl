@@ -50,7 +50,7 @@ ord_and_mean <- function(rarefied_matrix_list, repeats, cores = 2) {
   }
   
   # Stop the cluster after computation
-  stopCluster(cl)
+  suppressWarnings(stopCluster(cl))
 
   # Extract ordinations and plots from the results
   for (i in 1:length(results)) {
