@@ -39,3 +39,4 @@ Suggests:
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Config/Needs/website: rmarkdown
+URL: https://headonpillow.github.io/Sibyl/
