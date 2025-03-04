@@ -1,6 +1,7 @@
 # Sibyl <img src="man/figures/logo.svg" align="right" height="138" /></a>
 
 <!-- badges: start -->
+[![Codecov test coverage](https://codecov.io/gh/Headonpillow/Sibyl/graph/badge.svg)](https://app.codecov.io/gh/Headonpillow/Sibyl)
 <!-- badges: end -->
 
 **Sibyl** is a package designed to test different rarefaction thresholds when 
