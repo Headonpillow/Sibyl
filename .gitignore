@@ -4,8 +4,7 @@
 *.html
 *.Rcheck
 *.gz
-todo
-inst/doc
+*.txt
 vignettes/my-vignette_files
 vignettes/my-vignette_cache
 vignettes/my-vignette.Rmd
