@@ -3,18 +3,24 @@
 \docType{data}
 \name{adults}
 \alias{adults}
-\title{adults
-This is a Phyloseq object containing example data from a 16S amplicon study
-performed on adult mosquitoes from Burkina Faso.}
+\title{adults}
 \format{
-An object of class \code{phyloseq} of length 1.
+A \code{phyloseq} object with 34 samples and 5221 taxa.
+
+A sample_data object is included, with the following columns:
+\describe{
+\item{sample_id}{A unique identifier for each sample.}
+\item{location}{The location where the sample was collected.}
+}
+}
+\source{
+\url{https://pmc.ncbi.nlm.nih.gov/articles/PMC4785398/}
 }
 \usage{
 adults
 }
 \description{
-adults
-This is a Phyloseq object containing example data from a 16S amplicon study
-performed on adult mosquitoes from Burkina Faso.
+This is a \code{phyloseq} containing example data from
+a 16S study performed on adult mosquitoes from Burkina Faso.
 }
 \keyword{datasets}

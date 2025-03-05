@@ -1,35 +1,34 @@
-#' Perform Repeated Rarefaction and Generate an Ordination Plot using PCoA
+#' Perform repeated rarefaction
 #'
-#' This function performs repeated rarefaction on a phyloseq object, 
+#' This function performs repeated rarefaction on a `phyloseq` object, 
 #' computes ordination, and generates a PCoA-based visualization.
 #' The same procedure is used from `threshold_testing` function when testing 
 #' a range of thresholds. 
 #'
 #' @param input A `phyloseq` object.
-#' @param repeats An integer. The number of times to repeat rarefaction. A value of 1 means no repeats. Default = 50.
-#' @param threshold An integer. The threshold value to use for rarefaction. Default = 250.
-#' @param colorb A string. Column name in the `sample_data()` bundled with the 
-#' supplied `phyloseq` object, used to color sample points.
-#' @param group A string. Column name in `sample_data()` used for grouping the samples. 
-#' The parameter is also used to calculate an ellipse around the points. 
-#' The supplied value should coincide with the `group` when using the function
-#' `threshold_testing`, since it is on this parameter that also the clustering 
-#' performance index is calculated.
-#' @param cloud A boolean. If `TRUE`, all repeated data points are shown.
-#' Otherwise, only the median points of each sample repetitions cloud are plotted.
-#' Default = FALSE.
-#' @param ellipse A boolean. If `TRUE`, confidence ellipses around samples are 
-#' from the same group are drawn. Default = TRUE.
-#' @param cores An integer. Number of cores to use for parallel processing. Default = 2.
-#' @param ... Additional arguments to be passed to the function.
-#'
+#' @param repeats An integer. The number of times to repeat rarefaction. 
+#' A value of 1 means no repeats. If too few repeats are selected it would be
+#' not possible to draw an ellipse around the group.
+#' @param threshold An integer. The threshold value to use for rarefaction. 
+#' @param colorb A string. Column name in `sample_data()`. Used to color 
+#' sample points.
+#' @param group A string. Column name in `sample_data()`. Used to group the 
+#' samples. The parameter is also used to draw an ellipse around the points. 
+#' @param cloud A boolean. If `TRUE`, all the data points generated from
+#' repetitions are shown. Otherwise, only the median points of each sample 
+#' repetition cloud are plotted.
+#' @param ellipse A boolean. If `TRUE`, confidence ellipses around sample
+#' groups are drawn.
+#' @param cores An integer. Number of cores to use for parallel processing.
+#' @param ... Additional arguments are reserved to internal use.
 #' @return A list containing (While also showing the plot directly):
 #'   - `repeats`: Number of repeats.
-#'   - `df_consensus_coordinates`: Median ordination positions.
-#'   - `df_all`: All ordination positions.
+#'   - `df_consensus_coordinates`: A data frame with coordinates of the median
+#'   points of the sample clouds.
+#'   - `df_all`: A data frame of coordinates ordered by ordination number,
+#'   along with metatata.
 #'   - `plot`: a `ggplot` object.
-#'
-#' @importFrom phyloseq sample_data otu_table
+#' @importFrom phyloseq sample_data otu_table sample_data<-
 #' @importFrom dplyr mutate
 #' @importFrom vegan rrarefy vegdist procrustes
 #' @importFrom parallel makeCluster stopCluster
@@ -37,7 +36,28 @@
 #' @importFrom foreach foreach %dopar%
 #' @importFrom ggplot2 ggplot aes geom_point stat_ellipse theme_minimal ggtitle xlab ylab
 #' @export
-#' 
+#' @examples
+#' library(Sibyl)
+#' # Running this with cloud = TRUE and ellipse = TRUE will generate a plot 
+#' # where the samples belonging to the same group will be colored similarly 
+#' # and an ellipse will be drawn around the group.
+#' repeated_rarefaction(adults, 
+#'                      repeats = 10, 
+#'                      threshold = 250, 
+#'                      group = "location", 
+#'                      colorb = "location", 
+#'                      cloud = TRUE, 
+#'                      ellipse = TRUE)
+#'                      
+#' # We can run the function to highlight the spread of the single sample clouds
+#' # too, setting the groupb parameter to the sample_id.
+#' repeated_rarefaction(adults, 
+#'                      repeats = 10, 
+#'                      threshold = 250, 
+#'                      group = "sample_id", 
+#'                      colorb = "location", 
+#'                      cloud = TRUE, 
+#'                      ellipse = TRUE)
 repeated_rarefaction <- function(input, repeats = 50, threshold = 250, colorb="sample_id", group="sample_id", cloud = TRUE, ellipse = FALSE, cores = 2, ...) {
   # list hidden arguments
   hidden_args <- list(...)

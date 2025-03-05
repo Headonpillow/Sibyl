@@ -2,8 +2,11 @@ Package: Sibyl
 Title: Sibyl
 Version: 1.0
 Authors@R: c(
-    person("Lorenzo", "Assentato", email = "assentato.lorenzo@gmail.com", role = c("aut", "cre")), 
-    person("Magdalena", "Polder", email = "polder.magdalena@gmail.com", role = c("aut"))
+    person("Lorenzo", "Assentato", email = "assentato.lorenzo@gmail.com",
+    role = c("aut", "cre"),
+    comment = c(ORCID = "0000-0003-3699-0483")), 
+    person("Magdalena", "Polder", email = "polder.magdalena@gmail.com",
+    role = c("aut"))
     )
 Description: The Sibyl package provides a convenient way of testing a range of thresholds for rarefation, evaluating the effect of different values on ordination results, integrating with commonly used packages in microbial ecology. You provide phyloseq data with count data and sample information.
 License: GPL (>= 3)
@@ -29,14 +32,13 @@ Imports:
     broom,
     magrittr
 LazyData: true
-Suggests: 
-    knitr,
+Suggests:
     rmarkdown,
     ggpubr,
     vdiffr,
     withr,
     testthat (>= 3.0.0)
-VignetteBuilder: knitr
 Config/testthat/edition: 3
+Config/testthat/parallel: true
 Config/Needs/website: rmarkdown
 URL: https://headonpillow.github.io/Sibyl/

@@ -1,4 +1,36 @@
 url: https://headonpillow.github.io/Sibyl/
 template:
   bootstrap: 5
+  light-switch: true
+  
+reference:
+- title: Functions
+
+- subtitle: Accumulation curves
+  desc: >
+    Testing sample completeness
+  contents:
+  - accumulation_test
+
+- subtitle: Repeated rarefaction
+  desc: >
+    Performing either single or multiple instances of repeated rarefaction.
+  contents:
+  - repeated_rarefaction
+  - test_threshold
+  
+- subtitle: Plotting
+  desc: >
+    Accessory plotting functions
+  contents:
+  - avg_pairwise_dist_plot
+  
+- title: Data
+
+  desc: >
+    Available datasets
+  contents:
+  - adults
+  - larvae
+
 

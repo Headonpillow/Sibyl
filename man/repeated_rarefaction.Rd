@@ -2,7 +2,7 @@
 % Please edit documentation in R/repeated_rarefaction.R
 \name{repeated_rarefaction}
 \alias{repeated_rarefaction}
-\title{Perform Repeated Rarefaction and Generate an Ordination Plot using PCoA}
+\title{Perform repeated rarefaction}
 \usage{
 repeated_rarefaction(
   input,
@@ -19,42 +19,66 @@ repeated_rarefaction(
 \arguments{
 \item{input}{A \code{phyloseq} object.}
 
-\item{repeats}{An integer. The number of times to repeat rarefaction. A value of 1 means no repeats. Default = 50.}
+\item{repeats}{An integer. The number of times to repeat rarefaction.
+A value of 1 means no repeats. If too few repeats are selected it would be
+not possible to draw an ellipse around the group.}
 
-\item{threshold}{An integer. The threshold value to use for rarefaction. Default = 250.}
+\item{threshold}{An integer. The threshold value to use for rarefaction.}
 
-\item{colorb}{A string. Column name in the \code{sample_data()} bundled with the
-supplied \code{phyloseq} object, used to color sample points.}
+\item{colorb}{A string. Column name in \code{sample_data()}. Used to color
+sample points.}
 
-\item{group}{A string. Column name in \code{sample_data()} used for grouping the samples.
-The parameter is also used to calculate an ellipse around the points.
-The supplied value should coincide with the \code{group} when using the function
-\code{threshold_testing}, since it is on this parameter that also the clustering
-performance index is calculated.}
+\item{group}{A string. Column name in \code{sample_data()}. Used to group the
+samples. The parameter is also used to draw an ellipse around the points.}
 
-\item{cloud}{A boolean. If \code{TRUE}, all repeated data points are shown.
-Otherwise, only the median points of each sample repetitions cloud are plotted.
-Default = FALSE.}
+\item{cloud}{A boolean. If \code{TRUE}, all the data points generated from
+repetitions are shown. Otherwise, only the median points of each sample
+repetition cloud are plotted.}
 
-\item{ellipse}{A boolean. If \code{TRUE}, confidence ellipses around samples are
-from the same group are drawn. Default = TRUE.}
+\item{ellipse}{A boolean. If \code{TRUE}, confidence ellipses around sample
+groups are drawn.}
 
-\item{cores}{An integer. Number of cores to use for parallel processing. Default = 2.}
+\item{cores}{An integer. Number of cores to use for parallel processing.}
 
-\item{...}{Additional arguments to be passed to the function.}
+\item{...}{Additional arguments are reserved to internal use.}
 }
 \value{
 A list containing (While also showing the plot directly):
 \itemize{
 \item \code{repeats}: Number of repeats.
-\item \code{df_consensus_coordinates}: Median ordination positions.
-\item \code{df_all}: All ordination positions.
+\item \code{df_consensus_coordinates}: A data frame with coordinates of the median
+points of the sample clouds.
+\item \code{df_all}: A data frame of coordinates ordered by ordination number,
+along with metatata.
 \item \code{plot}: a \code{ggplot} object.
 }
 }
 \description{
-This function performs repeated rarefaction on a phyloseq object,
+This function performs repeated rarefaction on a \code{phyloseq} object,
 computes ordination, and generates a PCoA-based visualization.
 The same procedure is used from \code{threshold_testing} function when testing
 a range of thresholds.
+}
+\examples{
+library(Sibyl)
+# Running this with cloud = TRUE and ellipse = TRUE will generate a plot 
+# where the samples belonging to the same group will be colored similarly 
+# and an ellipse will be drawn around the group.
+repeated_rarefaction(adults, 
+                     repeats = 10, 
+                     threshold = 250, 
+                     group = "location", 
+                     colorb = "location", 
+                     cloud = TRUE, 
+                     ellipse = TRUE)
+                     
+# We can run the function to highlight the spread of the single sample clouds
+# too, setting the groupb parameter to the sample_id.
+repeated_rarefaction(adults, 
+                     repeats = 10, 
+                     threshold = 250, 
+                     group = "sample_id", 
+                     colorb = "location", 
+                     cloud = TRUE, 
+                     ellipse = TRUE)
 }

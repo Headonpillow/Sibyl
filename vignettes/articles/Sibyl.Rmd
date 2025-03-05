@@ -101,7 +101,7 @@ In this other example, we can see what happens when there are samples in the dat
 
 We get a sudden drop in the value of the CH index which indicates that samples have been removed, and there has been either a decrease of BCSS or an increase of WCSS (or both). However, this is a good indication of when samples are getting removed, and if it is important to keep all samples in the analysis, we might want to operate a choice that maximize the CH index.
 
-> This has been performed on a different dataset, accessible with:
+> This has been performed on a different dataset, accessible (when package is not loaded) with:
 
 ```{r, eval=FALSE, include=TRUE}
 data(larvae)

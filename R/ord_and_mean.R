@@ -1,24 +1,21 @@
-#' Perform Ordination and Compute Consensus Coordinates
+#' Perform ordination and compute consensus coordinates
 #'
 #' Computes ordination (PCoA) using Bray-Curtis distance and aligns 
 #' results across multiple rarefied datasets.
 #' This is the second step of the algorithm.
-#'
 #' @param rarefied_matrix_list A list of rarefied count tables.
 #' @param repeats An integer. The number of rarefaction repeats.
-#' @param cores An integer. The number of cores to use. Default = 4.
-#'
+#' @param cores An integer. The number of cores to use.
 #' @return A list containing:
 #'   - `aligned_ordinations`: List of aligned ordinations.
 #'   - `consensus_coordinates`: Consensus coordinates using Procrustes alignment.
-#'
 #' @importFrom vegan vegdist procrustes
 #' @importFrom parallel makeCluster stopCluster
 #' @importFrom doParallel registerDoParallel
 #' @importFrom foreach foreach %dopar%
 #' @importFrom geomorph mshape
 #' @importFrom stats cmdscale
-#' 
+#' @noRd
 #' @keywords internal
 ord_and_mean <- function(rarefied_matrix_list, repeats, cores = 2) {
   

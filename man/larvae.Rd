@@ -3,18 +3,25 @@
 \docType{data}
 \name{larvae}
 \alias{larvae}
-\title{larvae
-This is a Phyloseq object containing example data from a 16S amplicon study
-performed on mosquito larvae from Ethiopia.}
+\title{larvae}
 \format{
-An object of class \code{phyloseq} of length 1.
+A \code{phyloseq} object with 54 samples and 722 taxa.
+
+A sample_data object is included, with the following columns:
+\describe{
+\item{sample_id}{A unique identifier for each sample.}
+\item{breeding_site_type}{Environmental classification of sites where
+mosquitoes were collected}
+}
+}
+\source{
+\url{https://academic.oup.com/femsec/article/101/1/fiae161/7928135}
 }
 \usage{
 larvae
 }
 \description{
-larvae
-This is a Phyloseq object containing example data from a 16S amplicon study
-performed on mosquito larvae from Ethiopia.
+This is a \code{phyloseq} containing example data from
+a 16S study performed on adult mosquitoes larvae from Ethiopia.
 }
 \keyword{datasets}

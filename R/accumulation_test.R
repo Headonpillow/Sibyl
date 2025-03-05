@@ -1,21 +1,21 @@
-#' Accumulation Curve Analysis
+#' Accumulation curve analysis
 #'
 #' This function generates accumulation (rarefaction) curves for each sample in 
-#' a given `phyloseq` object, fits a general accumulation model using the Abundance 
+#' a given `phyloseq` object.
+#' 
+#' It fits a general accumulation model using the Abundance 
 #' Coverage Estimator (ACE) as an asymptote, and identifies the sequencing 
 #' depth at which 75% of the ACE value is reached. It also produces a density 
 #' plot showing the distribution of these 75% completion thresholds.
-#'
+#' 
 #' @param input A `phyloseq` object.
 #' @param step  A numeric value. The step size for drawing the accumulation curve.
 #' Default = 5.
-#'
 #' @return A list containing:
-#'   - `accumulation_plot`: A ggplot2 object with all sites faceted.
-#'   - `threshold_density`: A ggplot2 density/histogram plot of the 75% ACE thresholds.
-#'   - `individual_plots`: A list of ggplot2 objects, one per site.
-#'
-#' @importFrom phyloseq otu_table
+#'   - `accumulation_plot`: A `ggplot` object with all sites faceted.
+#'   - `threshold_density`: A `ggplot` density/histogram plot of the 75% ACE thresholds.
+#'   - `individual_plots`: A list of `ggplot` objects, one per site.
+#' @importFrom phyloseq otu_table subset_samples
 #' @importFrom vegan rarecurve estimateR
 #' @importFrom dplyr left_join mutate group_by select rename tibble
 #' @importFrom magrittr %>%
@@ -26,9 +26,14 @@
 #' @importFrom ggplot2 ggplot aes geom_point geom_line scale_color_manual 
 #'   geom_vline facet_wrap theme_minimal labs geom_histogram geom_density
 #'   labeller after_stat
-#'   
 #' @export
-#' 
+#' @examples
+#' library(Sibyl)
+#' # Creating a smaller subset of the data
+#' adults_sub <- phyloseq::subset_samples(adults, location=="VK3")
+#' # Running accumulation tests on a phyloseq object, higher step size reduces 
+#' # execution time.
+#' accumulation_test(adults_sub, step=50)
 accumulation_test <- function(input, step = 5) {
   # Transform the phyloseq to a df of counts
   counts <- as.data.frame(t(otu_table(input)))
@@ -230,9 +235,8 @@ accumulation_test <- function(input, step = 5) {
 #'
 #' @param x An `accumulation_test` object.
 #' @param ... Additional arguments (not used).
-#'
+#' @noRd
 #' @export
-#' 
 print.accumulation_test <- function(x, ...) {
   # Print only the accumulation plot
   print(x[["accumulation_plot"]])

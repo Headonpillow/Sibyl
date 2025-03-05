@@ -1,29 +1,38 @@
-#' Test Different Rarefaction Thresholds Using Repeated Rarefaction
+#' Test different rarefaction thresholds
 #'
-#' This function is a wrapper around the steps of `repeated_rarefaction` that evaluates 
-#' different rarefaction thresholds. It runs repeated rarefactions on a 
-#' `phyloseq` object and calculates clustering performance using the Calinski-Harabasz index.
-#' Moreover, the function also calculates the average pairwise distance for each sample 
-#' across different rarefaction thresholds, to give a measure of sample concordance.
+#' This function uses the same steps of `repeated_rarefaction` in a repeated 
+#' fashion and summarizes the results across multiple thresholds.
+#' 
+#' Clustering performance is evaluated using the Calinski-Harabasz index.
+#' The function also calculates the average pairwise distance for each sample 
+#' cloud across different rarefaction thresholds, to give a measure of sample 
+#' concordance (how stable the sample is at different thresholds).
 #'
 #' @param input A `phyloseq` object.
-#' @param repeats An integer or a vector of integers. 
-#' The number of times to repeat rarefaction. A value of 1 means no repeats. 
-#' If using a vector, different rarefaction thresholds will be tested sequentially. 
-#' Default = 50.
+#' @param repeats An integer, or a vector of integers. The number of times to 
+#' repeat rarefaction. A value of 1 means no repeats. If a vector, 
+#' different rarefaction thresholds will be tested sequentially. 
 #' @param t_min An integer. The minimum value for the threshold testing range. 
-#' Default = 50.
 #' @param t_max An integer. The maximum value for the threshold testing range. 
-#' Default = 250.
-#' @param t_step A numeric value. The step size for the threshold testing range. 
-#' A value between 0 and 1 will cause the same threshold to be tested multiple times. 
-#' Default = 5.
-#' @param group A string. A string. Column name in `sample_data()` used 
-#' for grouping the samples. It is also on this value that the Calinski-Harabasz
-#' index is calculated.
-#' @param cores An integer. Number of cores for parallel processing. Default = 2.
-#' @param ... Additional arguments to be passed to the function.
-#' 
+#' @param t_step An integer. The step size for the threshold testing range. 
+#' A value between 0 and 1 will cause the same threshold to be tested multiple 
+#' times. 
+#' @param group A string. Column name in `sample_data()`. Used to group the 
+#' samples. The parameter is also used to draw an ellipse around the points. 
+#' It the context of this function, is also the value that will be used for the 
+#' calculation of the Calinski-Harabasz index.
+#' @param cores An integer. Number of cores to use for parallel processing.
+#' @param verbose A logical. If `TRUE`, prints messages during the execution.
+#' @param ... Additional arguments are reserved to internal use.
+#' @return A list containing:
+#'   - `index_plot`: A `ggplot` object showing a scatterplot of 
+#'   Calinski-Harabasz index vs. rarefaction threshold.
+#'   - `ordination_plots`: A list of lists containing the ordination plots for 
+#'   tested threshold values. If multiple repeat values were used, each one
+#'   will be present in a different list.
+#'   - `avg_distances`: A data frame (or list of data frames if using multiple 
+#'   repeat values) with average pairwise distances of the cloud generated from 
+#'   each sample repetition attempts (for each threshold).
 #' @details
 #' Higher index values are better, and the plateauing of the index values when 
 #' testing higher thresholds indicate that the clouds of repetitions are compact
@@ -35,25 +44,25 @@
 #' they did not have enough reads to reach the threshold. In this case a warning
 #' is printed listing the samples which have been removed.
 #' In `avg_distances`, if samples do not have enough reads to reach `t_max` value, their
-#' APD are set to 0 after that threshold and a warning message is printed. 
-#'
-#' @return A list containing:
-#'   - `index_plot`: A `ggplot` object showing Calinski-Harabasz index vs. rarefaction threshold.
-#'   - `ordination_plots`: A list containing the ordination plots for tested threshold values.
-#'   The ordination plots have different levels corresponding to the number of repeats.
-#'   - `avg_distances`: A data frame (or list of data frames if using multiple repeat 
-#'   values) with average pairwise distances of the cloud generated from each 
-#'   sample repetition attempts (for each threshold).
-#'
-#' @importFrom phyloseq sample_data otu_table sample_data<-
+#' APD are set to 0 after that threshold and a warning message is printed.
+#' @importFrom phyloseq sample_data otu_table sample_data<- subset_samples
 #' @importFrom vegan vegdist
 #' @importFrom clusterSim index.G1
 #' @importFrom dplyr mutate group_by summarise ungroup
 #' @importFrom ggplot2 ggplot aes geom_point labs geom_smooth xlim ylim
 #' @importFrom utils capture.output
 #' @export
-#' 
-test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step = 5, group = "sample_id", cores = 2, ...) {
+#' @examples
+#' library(Sibyl)
+#' result <- test_threshold(adults, 
+#'                          repeats = 10, 
+#'                          t_min = 100, 
+#'                          t_max = 500, 
+#'                          t_step = 50, 
+#'                          group = "location", 
+#'                          verbose = FALSE)
+#' result$index_plot
+test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step = 5, group = "sample_id", cores = 2, verbose = TRUE, ...) {
   # list hidden arguments
   hidden_args <- list(...)
   
@@ -111,7 +120,9 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
     avg_distances <- data.frame(Sample_ID = character(0), Threshold = numeric(0), Avg_Distance = numeric(0))
     
     for (x in thresholds) {
-      message(paste("Running with", y, "repeats and", x, "threshold"))
+      if (verbose){
+        message(paste("Running with", y, "repeats and", x, "threshold"))
+      }
       # Setting the seed might be done for testing purposes
       if(!is.null(hidden_args$seed)){
         step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold = x, repeats = y, cores = cores, warning_collector = warningCollector, seed = hidden_args$seed)
@@ -288,9 +299,8 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
 #'
 #' @param x A `test_threshold` object.
 #' @param ... Additional arguments (not used).
-#'
+#' @noRd
 #' @export
-#' 
 print.test_threshold <- function(x, ...) {
   # Print only the index plot
   print(x[["index_plot"]])

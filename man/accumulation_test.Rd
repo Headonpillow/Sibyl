@@ -2,7 +2,7 @@
 % Please edit documentation in R/accumulation_test.R
 \name{accumulation_test}
 \alias{accumulation_test}
-\title{Accumulation Curve Analysis}
+\title{Accumulation curve analysis}
 \usage{
 accumulation_test(input, step = 5)
 }
@@ -15,15 +15,26 @@ Default = 5.}
 \value{
 A list containing:
 \itemize{
-\item \code{accumulation_plot}: A ggplot2 object with all sites faceted.
-\item \code{threshold_density}: A ggplot2 density/histogram plot of the 75\% ACE thresholds.
-\item \code{individual_plots}: A list of ggplot2 objects, one per site.
+\item \code{accumulation_plot}: A \code{ggplot} object with all sites faceted.
+\item \code{threshold_density}: A \code{ggplot} density/histogram plot of the 75\% ACE thresholds.
+\item \code{individual_plots}: A list of \code{ggplot} objects, one per site.
 }
 }
 \description{
 This function generates accumulation (rarefaction) curves for each sample in
-a given \code{phyloseq} object, fits a general accumulation model using the Abundance
+a given \code{phyloseq} object.
+}
+\details{
+It fits a general accumulation model using the Abundance
 Coverage Estimator (ACE) as an asymptote, and identifies the sequencing
 depth at which 75\% of the ACE value is reached. It also produces a density
 plot showing the distribution of these 75\% completion thresholds.
+}
+\examples{
+library(Sibyl)
+# Creating a smaller subset of the data
+adults_sub <- phyloseq::subset_samples(adults, location=="VK3")
+# Running accumulation tests on a phyloseq object, higher step size reduces 
+# execution time.
+accumulation_test(adults_sub, step=50)
 }

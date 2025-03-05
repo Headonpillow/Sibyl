@@ -1,21 +1,17 @@
-#' Perform Repeated Rarefaction
+#' Perform repeated rarefaction
 #'
 #' This function performs repeated rarefaction on a count table. 
-#' This is the first step of the algorithm.
-#'
 #' @param count A matrix. OTU count table.
 #' @param threshold An integer. The threshold for rarefaction.
 #' @param repeats An integer. Number of repeats.
-#'
 #' @return A list containing:
 #'   - `rarefied_matrix_list`: A list of rarefied matrices.
-#'
 #' @importFrom vegan rrarefy
 #' @importFrom parallel makeCluster stopCluster
 #' @importFrom doParallel registerDoParallel
 #' @importFrom doRNG %dorng%
 #' @importFrom foreach foreach %dopar%
-#' 
+#' @noRd
 #' @keywords internal
 rep_raref <- function(count, threshold, repeats, cores = 2, ...) {
   hidden_args <- list(...)
