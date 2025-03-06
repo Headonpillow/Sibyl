@@ -14,7 +14,7 @@ impact the structure of the data, or our conclusions, during exploratory analysi
 
 # Installation
 
-### (Quickest) Using Bioconductor Docker images - **all OS**
+### Quickest - Using Bioconductor Docker images (all OS)
 
 We recommend getting a working bioconductor installation through
 [docker images for bioconductor](https://bioconductor.org/help/docker/). We
@@ -34,15 +34,15 @@ dependencies = TRUE)
 ```
 Which installs the latest development version of **Sibyl**
 
-### (A little messier) Installing from source - **Linux only**
+### Slightly longer - Installing system dependencies manually (Linux only)
+
+For Ubuntu/Debian run:
 
 ```
-sudo apt-get install libcurl4-openssl-dev
-sudo apt-get install libssl-dev
-sudo apt-get install cmake
-sudo apt-get install libxml2-dev
-sudo apt-get install build-essential
-
+sudo apt update && sudo apt install -y \
+    libcurl4-openssl-dev libssl-dev cmake libxml2-dev build-essential \
+    liblapack-dev gfortran zlib1g-dev libgl1-mesa-dev libglu1-mesa-dev \
+    freeglut3-dev libx11-dev libjpeg-dev libpng-dev
 ```
 
 Some package dependencies are hosted on Bioconductor. In order to install them 
@@ -57,18 +57,13 @@ BiocManager::install("remotes")
 ```
 
 Then it will be possible to install the latest development version 
-of **Sibyl** from [Github](https://github.com/Headonpillow/Sibyl) with:
+of **Sibyl** with:
 
 ``` r
 BiocManager::install("Headonpillow/Sibyl", 
 dependencies = TRUE)
 
 ```
-
-### CRAN
-
-Coming soon.
-
 
 # Why using Sibyl
 
