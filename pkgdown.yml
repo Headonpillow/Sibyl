@@ -3,7 +3,7 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   articles/Sibyl: Sibyl.html
-last_built: 2025-03-05T16:07Z
+last_built: 2025-03-06T09:37Z
 urls:
   reference: https://headonpillow.github.io/Sibyl/reference
   article: https://headonpillow.github.io/Sibyl/articles
