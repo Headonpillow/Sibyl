@@ -1,0 +1,6 @@
+^LICENSE\.md$
+^vignettes(/|$)
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
