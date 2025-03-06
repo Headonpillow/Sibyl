@@ -14,8 +14,39 @@ impact the structure of the data, or our conclusions, during exploratory analysi
 
 # Installation
 
+### (Quickest) Using Bioconductor Docker images - **all OS**
+
+We recommend getting a working bioconductor installation through
+[docker images for bioconductor](https://bioconductor.org/help/docker/). We
+find the use of containers very useful, allowing for isolation of 
+R computing environments.
+
+The bioconductor images are maintained and updated regularly, and already
+include all the necessary system dependencies to make **Sibyl** and all its 
+dependencies work.
+
+Installation can be accomplished with:
+
+``` r
+BiocManager::install("Headonpillow/Sibyl", 
+dependencies = TRUE)
+
+```
+Which installs the latest development version of **Sibyl**
+
+### (A little messier) Installing from source - **Linux only**
+
+```
+sudo apt-get install libcurl4-openssl-dev
+sudo apt-get install libssl-dev
+sudo apt-get install cmake
+sudo apt-get install libxml2-dev
+sudo apt-get install build-essential
+
+```
+
 Some package dependencies are hosted on Bioconductor. In order to install them 
-you need to install `{BiocManager}`:
+you will need to install `{BiocManager}`:
 
 ``` r
 if (!require("BiocManager", quietly = TRUE)) {
@@ -25,14 +56,12 @@ BiocManager::install(version = "3.20")
 BiocManager::install("remotes")
 ```
 
-### GitHub (development version)
-
-You can install the latest development version of **Sibyl** from 
-[Github](https://github.com/Headonpillow/Sibyl) with:
+Then it will be possible to install the latest development version 
+of **Sibyl** from [Github](https://github.com/Headonpillow/Sibyl) with:
 
 ``` r
 BiocManager::install("Headonpillow/Sibyl", 
-dependencies = TRUE, build_vignettes = TRUE, force = TRUE)
+dependencies = TRUE)
 
 ```
 
@@ -40,14 +69,6 @@ dependencies = TRUE, build_vignettes = TRUE, force = TRUE)
 
 Coming soon.
 
-### Using bioconductor through docker
-
-We actually recommend getting a working bioconductor installation through
-[docker images for bioconductor](https://bioconductor.org/help/docker/). It is
-not a requirement, however the use of containers allows for isolation of R
-computing environments, which is a good thing. 
-Those images leverage the [rocker project](https://github.com/rocker-org), which 
-is also a great resource.
 
 # Why using Sibyl
 
