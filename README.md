@@ -2,6 +2,7 @@
 
 <!-- badges: start -->
 [![Codecov test coverage](https://codecov.io/gh/Headonpillow/Sibyl/graph/badge.svg)](https://app.codecov.io/gh/Headonpillow/Sibyl)
+[![R-CMD-check](https://github.com/Headonpillow/Sibyl/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Headonpillow/Sibyl/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 **Sibyl** is a package designed to test different rarefaction thresholds when 
@@ -21,6 +22,7 @@ if (!require("BiocManager", quietly = TRUE)) {
     install.packages("BiocManager")
 }
 BiocManager::install(version = "3.20")
+BiocManager::install("remotes")
 ```
 
 ### GitHub (development version)
