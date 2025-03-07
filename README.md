@@ -25,14 +25,23 @@ The bioconductor images are maintained and updated regularly, and already
 include all the necessary system dependencies to make **Sibyl** and all its 
 dependencies work.
 
-Installation can be accomplished with:
+To get a container running fast use the following, it starts a R Studio 
+server session which can be accessed at [localhost:8787](http://localhost:8787):
+
+```
+docker run \
+	-e DISABLE_AUTH=true \
+	-p 8787:8787 \
+	bioconductor/bioconductor_docker:latest
+```
+
+Then install the latest development version of **Sibyl** with:
 
 ``` r
 BiocManager::install("Headonpillow/Sibyl", 
 dependencies = TRUE)
 
 ```
-Which installs the latest development version of **Sibyl**
 
 ### Slightly longer - Installing system dependencies manually (Linux only)
 
