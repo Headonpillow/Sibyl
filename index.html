@@ -78,11 +78,15 @@
 </h3>
 <p>We recommend getting a working bioconductor installation through <a href="https://bioconductor.org/help/docker/" class="external-link">docker images for bioconductor</a>. We find the use of containers very useful, allowing for isolation of R computing environments.</p>
 <p>The bioconductor images are maintained and updated regularly, and already include all the necessary system dependencies to make <strong>Sibyl</strong> and all its dependencies work.</p>
-<p>Installation can be accomplished with:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<p>To get a container running fast use the following, it starts a R Studio server session which can be accessed at <a href="http://localhost:8787" class="external-link">localhost:8787</a>:</p>
+<pre><code>docker run \
+    -e DISABLE_AUTH=true \
+    -p 8787:8787 \
+    bioconductor/bioconductor_docker:latest</code></pre>
+<p>Then install the latest development version of <strong>Sibyl</strong> with:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu">install</span><span class="op">(</span><span class="st">"Headonpillow/Sibyl"</span>, </span>
 <span>dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>Which installs the latest development version of <strong>Sibyl</strong></p>
 </div>
 <div class="section level3">
 <h3 id="slightly-longer---installing-system-dependencies-manually-linux-only">Slightly longer - Installing system dependencies manually (Linux only)<a class="anchor" aria-label="anchor" href="#slightly-longer---installing-system-dependencies-manually-linux-only"></a>
@@ -93,14 +97,14 @@
     liblapack-dev gfortran zlib1g-dev libgl1-mesa-dev libglu1-mesa-dev \
     freeglut3-dev libx11-dev libjpeg-dev libpng-dev</code></pre>
 <p>Some package dependencies are hosted on Bioconductor. In order to install them you will need to install <a href="https://bioconductor.github.io/BiocManager/" class="external-link">BiocManager</a>:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.github.io/BiocManager/" class="external-link">"BiocManager"</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu">install</span><span class="op">(</span>version <span class="op">=</span> <span class="st">"3.20"</span><span class="op">)</span></span>
 <span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu">install</span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span></code></pre></div>
 <p>Then it will be possible to install the latest development version of <strong>Sibyl</strong> with:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu">install</span><span class="op">(</span><span class="st">"Headonpillow/Sibyl"</span>, </span>
 <span>dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
