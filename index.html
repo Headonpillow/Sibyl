@@ -66,54 +66,52 @@
 </div>
 <!-- badges: start -->
 
-<p><strong>Sibyl</strong> is a package designed to test different rarefaction thresholds when normalizing microbial abundance data.</p>
-<p>When performing Principal Component Analysis (PCA) and other types of ordination, it is necessary to make sure of choosing a rarefaction threshold which does not impact the structure of the data, or our conclusions, during exploratory analysis.</p>
+<p><strong>Sibyl</strong> is a package designed to test different rarefaction thresholds when normalizing microbial abundance data from 16S amplicon sequencing. It has been created to answer a simple question:“How low can you go”?</p>
 </div>
 <div class="section level1">
 <h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h1>
-<div class="section level3">
-<h3 id="quickest---using-bioconductor-docker-images-all-os">Quickest - Using Bioconductor Docker images (all OS)<a class="anchor" aria-label="anchor" href="#quickest---using-bioconductor-docker-images-all-os"></a>
-</h3>
-<p>We recommend getting a working bioconductor installation through <a href="https://bioconductor.org/help/docker/" class="external-link">docker images for bioconductor</a>. We find the use of containers very useful, allowing for isolation of R computing environments.</p>
-<p>The bioconductor images are maintained and updated regularly, and already include all the necessary system dependencies to make <strong>Sibyl</strong> and all its dependencies work.</p>
-<p>To get a container running fast use the following, it starts a R Studio server session which can be accessed at <a href="http://localhost:8787" class="external-link">localhost:8787</a>:</p>
-<pre><code>docker run \
-    -e DISABLE_AUTH=true \
-    -p 8787:8787 \
-    bioconductor/bioconductor_docker:latest</code></pre>
-<p>Then install the latest development version of <strong>Sibyl</strong> with:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu">install</span><span class="op">(</span><span class="st">"Headonpillow/Sibyl"</span>, </span>
-<span>dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="slightly-longer---installing-system-dependencies-manually-linux-only">Slightly longer - Installing system dependencies manually (Linux only)<a class="anchor" aria-label="anchor" href="#slightly-longer---installing-system-dependencies-manually-linux-only"></a>
-</h3>
-<p>For Ubuntu/Debian run:</p>
-<pre><code>sudo apt update &amp;&amp; sudo apt install -y \
-    libcurl4-openssl-dev libssl-dev cmake libxml2-dev build-essential \
-    liblapack-dev gfortran zlib1g-dev libgl1-mesa-dev libglu1-mesa-dev \
-    freeglut3-dev libx11-dev libjpeg-dev libpng-dev</code></pre>
-<p>Some package dependencies are hosted on Bioconductor. In order to install them you will need to install <a href="https://bioconductor.github.io/BiocManager/" class="external-link">BiocManager</a>:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.github.io/BiocManager/" class="external-link">"BiocManager"</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu">install</span><span class="op">(</span>version <span class="op">=</span> <span class="st">"3.20"</span><span class="op">)</span></span>
-<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu">install</span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span></code></pre></div>
-<p>Then it will be possible to install the latest development version of <strong>Sibyl</strong> with:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu">install</span><span class="op">(</span><span class="st">"Headonpillow/Sibyl"</span>, </span>
-<span>dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-</div>
+<p>The easiest way to install <strong>Sibyl</strong> is from our R-Universe, which provides prebuilt binaries for Windows and macOS, and source packages for Linux. Bioconductor repositories are added automatically for dependencies like <strong>phyloseq</strong>.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Sibyl requires R &gt;= 4.4</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric_version.html" class="external-link">getRversion</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"4.4.0"</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Sibyl requires R &gt;= 4.4.0. Please update R and try again."</span>, call. <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Add Bioconductor if missing</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, repos <span class="op">=</span> <span class="st">"https://cloud.r-project.org"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Prefer R-Universe + BioC</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  headonpillow <span class="op">=</span> <span class="st">"https://headonpillow.r-universe.dev"</span>,</span>
+<span>  <span class="fu">BiocManager</span><span class="fu">::</span><span class="fu">repositories</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  CRAN <span class="op">=</span> <span class="st">"https://cloud.r-project.org"</span></span>
+<span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"Sibyl"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://headonpillow.github.io/Sibyl/">Sibyl</a></span><span class="op">)</span></span></code></pre></div>
+<details><summary><strong>Linux users</strong>: if you see errors about missing system libraries
+</summary><p>Some dependencies may build from source on Linux. If installation fails, install the following system packages once and rerun the R code above.</p>
+<p><strong>Ubuntu/Debian</strong></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">sudo</span> apt update <span class="kw">&amp;&amp;</span> <span class="fu">sudo</span> apt install <span class="at">-y</span> <span class="dt">\</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  build-essential r-base-dev <span class="dt">\</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  libcurl4-openssl-dev libssl-dev libxml2-dev zlib1g-dev libgit2-dev <span class="dt">\</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  libjpeg-dev libpng-dev libx11-dev libglu1-mesa-dev freeglut3-dev libgl1-mesa-dev <span class="dt">\</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  liblapack-dev gfortran pkg-config</span></code></pre></div>
+<p><strong>Fedora</strong></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">sudo</span> dnf install <span class="at">-y</span> <span class="dt">\</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  R-devel @development-tools <span class="dt">\</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  libcurl-devel openssl-devel libxml2-devel zlib-devel libgit2-devel <span class="dt">\</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  libjpeg-turbo-devel libpng-devel libX11-devel mesa-libGLU-devel mesa-libGL-devel <span class="dt">\</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  lapack-devel blas-devel gcc-gfortran pkgconf-pkg-config</span></code></pre></div>
+</details>
 </div>
 <div class="section level1">
 <h1 id="why-using-sibyl">Why using Sibyl<a class="anchor" aria-label="anchor" href="#why-using-sibyl"></a>
 </h1>
 <p>The <strong>Sibyl</strong> package was created with the aim of testing the lower limit of rarefaction thresholds.</p>
-<p>While microbial abundance data is slowly moving away from methods like rarefaction to account for differing library size, rarefaction has been extensively used and still in 2025 is present in much of the literature, and discussed.</p>
-<p>When choosing a rarefaction threshold is common to need to operate a compromise between describing samples accurately (completeness), and including more samples, which might sometimes not meet the selected threshold.</p>
+<p>While microbial abundance data is slowly moving away from methods like rarefaction to account for differing library size, rarefaction has been extensively used and still in 2025 is present in much of the available literature, and still discussed.</p>
+<p>When performing Principal Component Analysis (PCA) and other types of ordination, it is necessary making sure to choose a rarefaction threshold which does not impact the structure of the data, or our conclusions, during exploratory analysis. Usually, when chosing a rarefaction threshold researchers need to operate a compromise between describing samples accurately (completeness), and including more samples, which might sometimes not meet the selected threshold.</p>
 <p><strong>Sibyl</strong> aims to solve that, allowing users to explore sample completeness, and the effect of rarefaction thresholds on ordinations, all with a single tool.</p>
 </div>
 
