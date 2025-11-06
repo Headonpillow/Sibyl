@@ -10,6 +10,7 @@ accumulation_test(input, step = 5)
 \item{input}{A \code{phyloseq} object.}
 
 \item{step}{A numeric value. The step size for drawing the accumulation curve.
+It influences the rarefaction curve calculation and the granularity of points plotted.
 Default = 5.}
 }
 \value{
