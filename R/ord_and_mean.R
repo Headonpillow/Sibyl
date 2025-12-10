@@ -13,7 +13,8 @@
 #' @importFrom parallel makeCluster stopCluster
 #' @importFrom doParallel registerDoParallel
 #' @importFrom foreach foreach %dopar%
-#' @importFrom geomorph mshape
+#' @importFrom stats cmdscale
+#' (uses an internal mean across specimens instead of geomorph::mshape)
 #' @importFrom stats cmdscale
 #' @noRd
 #' @keywords internal
@@ -62,8 +63,8 @@ ord_and_mean <- function(rarefied_matrix_list, repeats, cores = 2) {
   # Convert list to array for consensus calculation
   aligned_array <- array(unlist(aligned_ordinations), dim = c(nrow(aligned_ordinations[[1]]), ncol(aligned_ordinations[[1]]), length(aligned_ordinations)))
   
-  # Compute consensus using mean shape
-  consensus_coords <- mshape(aligned_array)
+  # Compute consensus using mean shape (mean across the 3rd dimension: specimens)
+  consensus_coords <- apply(aligned_array, c(1, 2), mean, na.rm = TRUE)
   
   return(invisible(list("aligned_ordinations" = aligned_ordinations, "consensus_coordinates" = consensus_coords)))
 }
