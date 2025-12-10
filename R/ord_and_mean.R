@@ -14,8 +14,6 @@
 #' @importFrom doParallel registerDoParallel
 #' @importFrom foreach foreach %dopar%
 #' @importFrom stats cmdscale
-#' (uses an internal mean across specimens instead of geomorph::mshape)
-#' @importFrom stats cmdscale
 #' @noRd
 #' @keywords internal
 ord_and_mean <- function(rarefied_matrix_list, repeats, cores = 2) {

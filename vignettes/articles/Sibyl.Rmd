@@ -58,6 +58,10 @@ The resulting list contains:
 Let's take a look at the first 4 individual accumulation plots:
 
 ```{r, warning=FALSE, out.width="98%", out.height=500, fig.width=8, fig.height=6, dpi = 500}
+if (!ggpubr_installed) {
+  message("Install 'ggpubr' to reproduce the vignette examples: install.packages('ggpubr')")
+}
+
 ggpubr::ggarrange(plotlist =  accumulation_result$individual_plots[1:4], nrow=2, ncol=2)
 ```
 
@@ -134,6 +138,10 @@ n <- length(ordination_plots)
 # Get indices
 indices <- unique(c(1, ceiling(n / 2), n))
 selected_plots <- lapply(indices, function(i) ordination_plots[[i]])
+
+if (!ggpubr_installed) {
+  message("Install 'ggpubr' to reproduce the vignette examples: install.packages('ggpubr')")
+}
 ggpubr::ggarrange(plotlist = selected_plots, ncol = 3, common.legend = TRUE)
 ```
 

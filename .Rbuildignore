@@ -4,6 +4,7 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^\.vscode$
 
 ^vignettes/Sibyl_cache(/|$)
 

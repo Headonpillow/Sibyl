@@ -1,5 +1,5 @@
-Ignore hidden folders
-.*
+Ignore vscode folder
+.vscode
 
 .Rhistory
 .RData
