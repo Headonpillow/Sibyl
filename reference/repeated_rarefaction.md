@@ -104,6 +104,4 @@ repeated_rarefaction(adults,
                      colorb = "location", 
                      cloud = TRUE, 
                      ellipse = TRUE)
-#> Warning: Probable convergence failure
-#> Warning: Probable convergence failure
 ```
