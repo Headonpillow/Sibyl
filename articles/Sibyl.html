@@ -65,7 +65,7 @@
                         <h4 data-toc-skip class="author">Lorenzo
 Assentato</h4>
             
-            <h4 data-toc-skip class="date">2025-11-06</h4>
+            <h4 data-toc-skip class="date">2025-12-11</h4>
       
 
       <div class="d-none name"><code>Sibyl.Rmd</code></div>
@@ -158,13 +158,18 @@ fitted accumulation curves.</li>
 </ul>
 <p>Let’s take a look at the first 4 individual accumulation plots:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">ggpubr</span><span class="fu">::</span><span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/ggarrange.html" class="external-link">ggarrange</a></span><span class="op">(</span>plotlist <span class="op">=</span>  <span class="va">accumulation_result</span><span class="op">$</span><span class="va">individual_plots</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>, nrow<span class="op">=</span><span class="fl">2</span>, ncol<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Sibyl_files/figure-html/unnamed-chunk-3-1.png" width="98%" height="500"></p>
+<code class="sourceCode R"><span><span class="va">ggpubr_installed</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"ggpubr"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="va">ggpubr_installed</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"Install 'ggpubr' to reproduce the vignette examples: install.packages('ggpubr')"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu">ggpubr</span><span class="fu">::</span><span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/ggarrange.html" class="external-link">ggarrange</a></span><span class="op">(</span>plotlist <span class="op">=</span>  <span class="va">accumulation_result</span><span class="op">$</span><span class="va">individual_plots</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>, nrow<span class="op">=</span><span class="fl">2</span>, ncol<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Sibyl_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" width="98%" height="500"></p>
 <p>The density plot is a visual summary of the range at which most of
 the 75% thresholds calculated on the dataset fell.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">accumulation_result</span><span class="op">$</span><span class="va">threshold_density</span></span></code></pre></div>
-<p><img src="Sibyl_files/figure-html/unnamed-chunk-4-1.png" width="98%" height="500"></p>
+<p><img src="Sibyl_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" width="98%" height="500"></p>
 <p>Together, the results produced from this test can be used to choose
 an appropriate threshold range to perform the rest of the analysis.</p>
 <p>Ideally, while prioritizing sample completeness, we want to make sure
@@ -215,7 +220,7 @@ plateau, which indicates that a higher sequencing effort (a higher
 rarefaction threshold) does not affect the ordination.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">threshold_test_result</span><span class="op">$</span><span class="va">index_plot</span></span></code></pre></div>
-<p><img src="Sibyl_files/figure-html/unnamed-chunk-6-1.png" width="98%" height="500"></p>
+<p><img src="Sibyl_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" width="98%" height="500"></p>
 <p>In this other example, we can see what happens when there are samples
 in the dataset which do not have enough reads to meet the rarefaction
 threshold.</p>
@@ -231,7 +236,7 @@ package is not loaded) with:</p>
 </blockquote>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">larvae</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Sibyl_files/figure-html/unnamed-chunk-9-1.png" width="98%" height="500"></p>
+<p><img src="Sibyl_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" width="98%" height="500"></p>
 <ol start="2" style="list-style-type: decimal">
 <li>
 <strong>ordination_plots:</strong> This is a list containing all the
@@ -259,8 +264,12 @@ overlap of two groups which are normally separated.</p>
 <span><span class="co"># Get indices</span></span>
 <span><span class="va">indices</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span><span class="va">n</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span>, <span class="va">n</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">selected_plots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">indices</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="va">ordination_plots</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="va">ggpubr_installed</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"Install 'ggpubr' to reproduce the vignette examples: install.packages('ggpubr')"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span><span class="fu">ggpubr</span><span class="fu">::</span><span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/ggarrange.html" class="external-link">ggarrange</a></span><span class="op">(</span>plotlist <span class="op">=</span> <span class="va">selected_plots</span>, ncol <span class="op">=</span> <span class="fl">3</span>, common.legend <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Sibyl_files/figure-html/unnamed-chunk-11-1.png" width="98%" height="75%"></p>
+<p><img src="Sibyl_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" width="98%" height="75%"></p>
 <ol start="3" style="list-style-type: decimal">
 <li>
 <strong>avg_distances:</strong> This is a list of dataframes which
@@ -277,7 +286,7 @@ sample position is less affected by repeating the sub-sampling.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">APD_plots</span> <span class="op">&lt;-</span> <span class="va">threshold_test_result</span><span class="op">$</span><span class="va">avg_distances</span><span class="op">$</span><span class="va">repeat_number_100</span></span>
 <span><span class="fu"><a href="../reference/avg_pairwise_dist_plot.html">avg_pairwise_dist_plot</a></span><span class="op">(</span><span class="va">APD_plots</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Sibyl_files/figure-html/unnamed-chunk-12-1.png" width="98%" height="500"></p>
+<p><img src="Sibyl_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" width="98%" height="500"></p>
 </div>
 <div class="section level3">
 <h3 id="consideration-on-the-results">Consideration on the results<a class="anchor" aria-label="anchor" href="#consideration-on-the-results"></a>
@@ -319,7 +328,7 @@ Microbiology Ecology, Volume 101, Issue 1, (2025).</p></li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

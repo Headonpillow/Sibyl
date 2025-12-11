@@ -1,0 +1,121 @@
+# Sibyl
+
+**Sibyl** is a package designed to test different rarefaction thresholds
+when normalizing microbial abundance data from 16S amplicon sequencing.
+It has been created to answer a simple question:“How low can you go”?
+
+# Installation
+
+The easiest way to install **Sibyl** is from our R-Universe, which
+provides prebuilt binaries for Windows and macOS, and source packages
+for Linux. Bioconductor repositories are added automatically for
+dependencies like **phyloseq**.
+
+``` r
+# Sibyl requires R >= 4.4
+if (getRversion() < "4.4.0")
+  stop("Sibyl requires R >= 4.4.0. Please update R and try again.", call. = FALSE)
+
+# Add Bioconductor if missing
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager", repos = "https://cloud.r-project.org")
+
+# Prefer R-Universe + BioC
+options(repos = c(
+  headonpillow = "https://headonpillow.r-universe.dev",
+  BiocManager::repositories(),
+  CRAN = "https://cloud.r-project.org"
+))
+
+install.packages("Sibyl")
+library(Sibyl)
+```
+
+**Linux users**: if you see errors about missing system libraries
+
+Some dependencies may build from source on Linux. If installation fails,
+install the following system packages once and rerun the R code above.
+
+**Ubuntu/Debian**
+
+``` bash
+sudo apt update && sudo apt install -y \
+  build-essential r-base-dev \
+  libcurl4-openssl-dev libssl-dev libxml2-dev zlib1g-dev libgit2-dev \
+  libjpeg-dev libpng-dev libx11-dev libglu1-mesa-dev freeglut3-dev libgl1-mesa-dev \
+  liblapack-dev gfortran pkg-config
+```
+
+**Fedora**
+
+``` bash
+sudo dnf install -y \
+  R-devel @development-tools \
+  libcurl-devel openssl-devel libxml2-devel zlib-devel libgit2-devel \
+  libjpeg-turbo-devel libpng-devel libX11-devel mesa-libGLU-devel mesa-libGL-devel \
+  lapack-devel blas-devel gcc-gfortran pkgconf-pkg-config
+```
+
+# Why using Sibyl
+
+The **Sibyl** package was created with the aim of testing the lower
+limit of rarefaction thresholds.
+
+While microbial abundance data is slowly moving away from methods like
+rarefaction to account for differing library size, rarefaction has been
+extensively used and still in 2025 is present in much of the available
+literature, and still discussed.
+
+When performing Principal Component Analysis (PCA) and other types of
+ordination, it is necessary making sure to choose a rarefaction
+threshold which does not impact the structure of the data, or our
+conclusions, during exploratory analysis. Usually, when chosing a
+rarefaction threshold researchers need to operate a compromise between
+describing samples accurately (completeness), and including more
+samples, which might sometimes not meet the selected threshold.
+
+**Sibyl** aims to solve that, allowing users to explore sample
+completeness, and the effect of rarefaction thresholds on ordinations,
+all with a single tool.
+
+# Package index
+
+## Functions
+
+### Accumulation curves
+
+Testing sample completeness
+
+- [`accumulation_test()`](https://headonpillow.github.io/Sibyl/reference/accumulation_test.md)
+  : Accumulation curve analysis
+
+### Repeated rarefaction
+
+Performing either single or multiple instances of repeated rarefaction.
+
+- [`repeated_rarefaction()`](https://headonpillow.github.io/Sibyl/reference/repeated_rarefaction.md)
+  : Perform repeated rarefaction
+- [`test_threshold()`](https://headonpillow.github.io/Sibyl/reference/test_threshold.md)
+  : Test different rarefaction thresholds
+
+### Plotting
+
+Accessory plotting functions
+
+- [`avg_pairwise_dist_plot()`](https://headonpillow.github.io/Sibyl/reference/avg_pairwise_dist_plot.md)
+  : Plot average pairwise distance across thresholds
+
+## Data
+
+Available datasets
+
+- [`adults`](https://headonpillow.github.io/Sibyl/reference/adults.md) :
+  adults
+- [`larvae`](https://headonpillow.github.io/Sibyl/reference/larvae.md) :
+  larvae
+
+# Articles
+
+### All vignettes
+
+- [Sibyl](https://headonpillow.github.io/Sibyl/articles/Sibyl.md):
