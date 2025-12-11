@@ -140,6 +140,7 @@ n <- length(ordination_plots)
 indices <- unique(c(1, ceiling(n / 2), n))
 selected_plots <- lapply(indices, function(i) ordination_plots[[i]])
 
+ggpubr_installed <- requireNamespace("ggpubr", quietly = TRUE)
 if (!ggpubr_installed) {
   message("Install 'ggpubr' to reproduce the vignette examples: install.packages('ggpubr')")
 }
