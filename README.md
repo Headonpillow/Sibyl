@@ -3,6 +3,7 @@
 <!-- badges: start -->
 [![Codecov test coverage](https://codecov.io/gh/Headonpillow/Sibyl/graph/badge.svg)](https://app.codecov.io/gh/Headonpillow/Sibyl)
 [![R-CMD-check](https://github.com/Headonpillow/Sibyl/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Headonpillow/Sibyl/actions/workflows/R-CMD-check.yaml)
+[![name status badge](https://headonpillow.r-universe.dev/badges/:name)](https://headonpillow.r-universe.dev/)
 <!-- badges: end -->
 
 **Sibyl** is a package designed to test different rarefaction thresholds when 
