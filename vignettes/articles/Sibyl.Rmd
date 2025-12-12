@@ -58,6 +58,7 @@ The resulting list contains:
 Let's take a look at the first 4 individual accumulation plots:
 
 ```{r, warning=FALSE, out.width="98%", out.height=500, fig.width=8, fig.height=6, dpi = 500}
+ggpubr_installed <- requireNamespace("ggpubr", quietly = TRUE)
 if (!ggpubr_installed) {
   message("Install 'ggpubr' to reproduce the vignette examples: install.packages('ggpubr')")
 }
@@ -139,6 +140,7 @@ n <- length(ordination_plots)
 indices <- unique(c(1, ceiling(n / 2), n))
 selected_plots <- lapply(indices, function(i) ordination_plots[[i]])
 
+ggpubr_installed <- requireNamespace("ggpubr", quietly = TRUE)
 if (!ggpubr_installed) {
   message("Install 'ggpubr' to reproduce the vignette examples: install.packages('ggpubr')")
 }

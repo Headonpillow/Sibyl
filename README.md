@@ -3,6 +3,7 @@
 <!-- badges: start -->
 [![Codecov test coverage](https://codecov.io/gh/Headonpillow/Sibyl/graph/badge.svg)](https://app.codecov.io/gh/Headonpillow/Sibyl)
 [![R-CMD-check](https://github.com/Headonpillow/Sibyl/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Headonpillow/Sibyl/actions/workflows/R-CMD-check.yaml)
+[![name status badge](https://headonpillow.r-universe.dev/badges/:name)](https://headonpillow.r-universe.dev/)
 <!-- badges: end -->
 
 **Sibyl** is a package designed to test different rarefaction thresholds when 
@@ -17,9 +18,9 @@ Bioconductor repositories are added automatically for dependencies like
 **phyloseq**.
 
 ```r
-# Sibyl requires R >= 4.4
-if (getRversion() < "4.4.0")
-  stop("Sibyl requires R >= 4.4.0. Please update R and try again.", call. = FALSE)
+# Sibyl requires R >= 4.2
+if (getRversion() < "4.2.0")
+  stop("Sibyl requires R >= 4.2.0. Please update R and try again.", call. = FALSE)
 
 # Add Bioconductor if missing
 if (!requireNamespace("BiocManager", quietly = TRUE))
