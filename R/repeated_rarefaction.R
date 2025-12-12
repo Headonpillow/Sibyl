@@ -59,8 +59,7 @@
 #'                      cloud = TRUE, 
 #'                      ellipse = TRUE)
 repeated_rarefaction <- function(input, repeats = 50, threshold = 250, colorb="sample_id", group="sample_id", cloud = TRUE, ellipse = FALSE, cores = 2, ...) {
-  # list hidden arguments
-  hidden_args <- list(...)
+  # additional args (reserved for internal use)
   
   # Check if input is a Phyloseq object
   if (inherits(input, "phyloseq")) {
@@ -103,12 +102,8 @@ repeated_rarefaction <- function(input, repeats = 50, threshold = 250, colorb="s
   }
 
   # Perform the different steps of the repeated rarefaction algorithm
-  # Setting the seed might be done for testing purposes
-  if(!is.null(hidden_args$seed)){
-    step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold, repeats, cores = cores, seed = hidden_args$seed)
-  } else {
-      step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold, repeats, cores = cores)
-  }
+  # Perform rarefactions (each replicate handled inside rep_raref)
+  step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold, repeats, cores = cores)
   step2 <- ord_and_mean(step1$rarefied_matrix_list, repeats, cores = cores)
   step3 <- plot_rep_raref(step2$aligned_ordinations, step2$consensus_coordinates, sample_data(physeq), colorb, group, cloud, ellipse, "Aligned Ordinations with Consensus Overlaid")
 

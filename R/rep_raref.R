@@ -9,7 +9,6 @@
 #' @importFrom vegan rrarefy
 #' @importFrom parallel makeCluster stopCluster
 #' @importFrom doParallel registerDoParallel
-#' @importFrom doRNG %dorng%
 #' @importFrom foreach foreach %dopar%
 #' @noRd
 #' @keywords internal
@@ -57,16 +56,17 @@ rep_raref <- function(count, threshold, repeats, cores = 2, ...) {
   cl <- makeCluster(cores)
   registerDoParallel(cl)
   
-  if (!is.null(hidden_args$seed)) {
-    # Use doRNG to ensure reproducibility across workers (seed might be set for testing)
-    rarefied_matrices <- foreach(i = 1:repeats, .packages = "vegan", .options.RNG = hidden_args$seed) %dorng% {
-      rrarefy(count, sample = threshold)
-    }
-  } else {
-    # Rarefaction is parallelized
-    rarefied_matrices <- foreach(i = 1:repeats, .packages = "vegan") %dopar% {
-      rrarefy(count, sample = threshold)
-    }
+  # generate per-iteration seeds in the master process
+  # This is randomly sampling integers up to the maximum integer size
+  # This ensures different seeds across different runs (creates as many 
+  # unique seeds as repeats)
+  per_iter_seeds <- sample.int(.Machine$integer.max, size = repeats)
+
+  # perform rarefactions: each worker sets its own seed from per_iter_seeds
+  # to ensure reproducibility and avoid weird correlations
+  rarefied_matrices <- foreach(i = 1:repeats, .packages = "vegan") %dopar% {
+    set.seed(per_iter_seeds[i])
+    rrarefy(count, sample = threshold)
   }
   
   # Stop the cluster

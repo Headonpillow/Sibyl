@@ -63,8 +63,7 @@
 #'                          verbose = FALSE)
 #' result$index_plot
 test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step = 5, group = "sample_id", cores = 2, verbose = TRUE, ...) {
-  # list hidden arguments
-  hidden_args <- list(...)
+  # additional args (reserved for internal use)
   
   # Check if input is a Phyloseq object
   if (inherits(input, "phyloseq")) {
@@ -123,12 +122,8 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
       if (verbose){
         message(paste("Running with", y, "repeats and", x, "threshold"))
       }
-      # Setting the seed might be done for testing purposes
-      if(!is.null(hidden_args$seed)){
-        step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold = x, repeats = y, cores = cores, warning_collector = warningCollector, seed = hidden_args$seed)
-      } else {
-        step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold = x, repeats = y, cores = cores, warning_collector = warningCollector)
-      }
+      # Perform rarefaction for this threshold and repeat amount
+      step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold = x, repeats = y, cores = cores, warning_collector = warningCollector)
       step2 <- ord_and_mean(step1$rarefied_matrix_list, repeats, cores = cores)
       # ============= AVERAGE PAIRWISE DISTANCE CALCULATION (THIS THRESHOLD)
       
