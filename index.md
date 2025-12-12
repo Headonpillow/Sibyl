@@ -12,9 +12,9 @@ for Linux. Bioconductor repositories are added automatically for
 dependencies like **phyloseq**.
 
 ``` r
-# Sibyl requires R >= 4.4
-if (getRversion() < "4.4.0")
-  stop("Sibyl requires R >= 4.4.0. Please update R and try again.", call. = FALSE)
+# Sibyl requires R >= 4.2
+if (getRversion() < "4.2.0")
+  stop("Sibyl requires R >= 4.2.0. Please update R and try again.", call. = FALSE)
 
 # Add Bioconductor if missing
 if (!requireNamespace("BiocManager", quietly = TRUE))
