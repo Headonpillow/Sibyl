@@ -9,13 +9,13 @@
 
 ## Citation
 
-Assentato L, Polder M (2025). *Sibyl: Sibyl*. R package version 1.0,
+Assentato L, Polder M (2026). *Sibyl: Sibyl*. R package version 1.0,
 <https://headonpillow.github.io/Sibyl/>.
 
     @Manual{,
       title = {Sibyl: Sibyl},
       author = {Lorenzo Assentato and Magdalena Polder},
-      year = {2025},
+      year = {2026},
       note = {R package version 1.0},
       url = {https://headonpillow.github.io/Sibyl/},
     }

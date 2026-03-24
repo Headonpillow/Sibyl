@@ -32,12 +32,27 @@ A list containing:
 
 - `individual_plots`: A list of `ggplot` objects, one per site.
 
+- `nls_failed_sites`: A character vector of site names for which the
+  nonlinear model failed to converge.
+
+- `quality_failed_sites`: A character vector of site names for which the
+  model converged but failed quality-control criteria (e.g. implausible
+  threshold or poor fit).
+
+- `fitted_table`: A data frame containing per-site model results and
+  diagnostics, including fitted parameters, threshold estimates, and
+  quality-control flags.
+
 ## Details
 
 It fits a general accumulation model using the Abundance Coverage
 Estimator (ACE) as an asymptote, and identifies the sequencing depth at
 which 75% of the ACE value is reached. It also produces a density plot
 showing the distribution of these 75% completion thresholds.
+
+Sites that fail model fitting or quality-control criteria are excluded
+from downstream analyses, and their identities are returned for
+inspection.
 
 ## Examples
 

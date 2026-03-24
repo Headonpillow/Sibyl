@@ -68,6 +68,13 @@ Default = 5.</p></dd>
     <p>A list containing:</p><ul><li><p><code>accumulation_plot</code>: A <code>ggplot</code> object with all sites faceted.</p></li>
 <li><p><code>threshold_density</code>: A <code>ggplot</code> density/histogram plot of the 75% ACE thresholds.</p></li>
 <li><p><code>individual_plots</code>: A list of <code>ggplot</code> objects, one per site.</p></li>
+<li><p><code>nls_failed_sites</code>: A character vector of site names for which the nonlinear
+model failed to converge.</p></li>
+<li><p><code>quality_failed_sites</code>: A character vector of site names for which the model
+converged but failed quality-control criteria (e.g. implausible threshold or
+poor fit).</p></li>
+<li><p><code>fitted_table</code>: A data frame containing per-site model results and diagnostics,
+including fitted parameters, threshold estimates, and quality-control flags.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -75,6 +82,8 @@ Default = 5.</p></dd>
 Coverage Estimator (ACE) as an asymptote, and identifies the sequencing
 depth at which 75% of the ACE value is reached. It also produces a density
 plot showing the distribution of these 75% completion thresholds.</p>
+<p>Sites that fail model fitting or quality-control criteria are excluded from
+downstream analyses, and their identities are returned for inspection.</p>
     </div>
 
     <div class="section level2">
