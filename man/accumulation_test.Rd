@@ -19,6 +19,13 @@ A list containing:
 \item \code{accumulation_plot}: A \code{ggplot} object with all sites faceted.
 \item \code{threshold_density}: A \code{ggplot} density/histogram plot of the 75\% ACE thresholds.
 \item \code{individual_plots}: A list of \code{ggplot} objects, one per site.
+\item \code{nls_failed_sites}: A character vector of site names for which the nonlinear
+model failed to converge.
+\item \code{quality_failed_sites}: A character vector of site names for which the model
+converged but failed quality-control criteria (e.g. implausible threshold or
+poor fit).
+\item \code{fitted_table}: A data frame containing per-site model results and diagnostics,
+including fitted parameters, threshold estimates, and quality-control flags.
 }
 }
 \description{
@@ -30,6 +37,9 @@ It fits a general accumulation model using the Abundance
 Coverage Estimator (ACE) as an asymptote, and identifies the sequencing
 depth at which 75\% of the ACE value is reached. It also produces a density
 plot showing the distribution of these 75\% completion thresholds.
+
+Sites that fail model fitting or quality-control criteria are excluded from
+downstream analyses, and their identities are returned for inspection.
 }
 \examples{
 library(Sibyl)
