@@ -56,7 +56,7 @@ ord_and_mean <- function(rarefied_matrix_list, repeats, cores = 2) {
   #================================ procrustes
   
   # Perform Procrustes analysis to align all ordinations to the first one
-  aligned_ordinations <- lapply(ordinations, function(x) procrustes(ordinations[[1]], x)$Yrot)
+  aligned_ordinations <- lapply(ordinations, function(x) procrustes(ordinations[[1]], x, scale = FALSE)$Yrot)
   
   # Convert list to array for consensus calculation
   aligned_array <- array(unlist(aligned_ordinations), dim = c(nrow(aligned_ordinations[[1]]), ncol(aligned_ordinations[[1]]), length(aligned_ordinations)))
