@@ -89,7 +89,7 @@ ord_and_mean <- function(matrix_list, replicates, distance = "bray", cores = 2) 
       )
     )
   
-  # Compute consensus using mean shape (mean across the 3rd dimension: specimens)
+  # Compute consensus coordinates as the arithmetic mean across replicates (3rd dimension)
   consensus_coords <- apply(aligned_array, c(1, 2), mean, na.rm = TRUE)
   rownames(consensus_coords) <- rownames(aligned_ordinations[[1]])
   colnames(consensus_coords) <- colnames(aligned_ordinations[[1]])
