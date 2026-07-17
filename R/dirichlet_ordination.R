@@ -96,7 +96,7 @@ dirichlet_ordination <- function(input, draws = 128, colorb="sample_id", group="
   # Perform the different steps of the dirichlet_ordination algorithm
   # Perform montecarlo draws from dirichlet distribution (each replicate handled inside rep_montecarlo_draws)
   step1 <- rep_mc_draws(data.frame(t(otu_table(physeq))), draws, conds = conds, cores = cores)
-  step2 <- ord_and_mean2(step1$dirichlet_matrix_list, draws, distance = "aitchison", cores = cores)
+  step2 <- ord_and_mean(step1$dirichlet_matrix_list, draws, distance = "aitchison", cores = cores)
   step3 <- plot_rep_raref(step2$aligned_ordinations, step2$consensus_coordinates, sample_data(physeq), colorb, group, cloud, ellipse, "Aligned Ordinations with Consensus Overlaid")
   
   print(step3$plot)

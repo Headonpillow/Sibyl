@@ -7,7 +7,7 @@
 #' shared by the repeated rarefaction and Dirichlet-based ordination
 #' algorithms.
 #' @param matrix_list A list of replicate count/compositional tables.
-#' @param repeats An integer. The number of replicates (rarefaction repeats
+#' @param replicates An integer. The number of replicates (rarefaction repeats
 #' or Monte Carlo draws).
 #' @param distance A string. The dissimilarity measure passed to
 #' `vegan::vegdist()`, e.g. `"bray"` for rarefied counts or `"aitchison"`
@@ -23,7 +23,7 @@
 #' @importFrom stats cmdscale
 #' @noRd
 #' @keywords internal
-ord_and_mean2 <- function(matrix_list, repeats, distance = "bray", cores = 2) {
+ord_and_mean <- function(matrix_list, replicates, distance = "bray", cores = 2) {
   
   #========================= ordinations and plots generation
   

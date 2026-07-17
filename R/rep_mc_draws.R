@@ -24,7 +24,7 @@ rep_mc_draws <- function(count, draws = 128, conds = NULL, cores = 2, ...) {
   hidden_args <- list(...)
 
   if (draws <= 0) {
-    stop("repeats can't be 0. It needs to be a positive integer")
+    stop("draws can't be 0. It needs to be a positive integer")
   }
 
   # If no grouping variable is provided, assign all samples to one group

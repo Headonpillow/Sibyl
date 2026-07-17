@@ -18,7 +18,14 @@ reference:
   contents:
   - repeated_rarefaction
   - test_threshold
-  
+
+- subtitle: Dirichlet Monte Carlo ordination
+  desc: >
+    Quantifying compositional uncertainty via Monte Carlo sampling from the
+    Dirichlet posterior, as an alternative to repeated rarefaction.
+  contents:
+  - dirichlet_ordination
+
 - subtitle: Plotting
   desc: >
     Accessory plotting functions

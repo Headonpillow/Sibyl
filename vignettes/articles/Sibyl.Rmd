@@ -1,6 +1,6 @@
 ---
 title: "Sibyl"
-author: Lorenzo Assentato
+author: "Lorenzo Assentato"
 date: "`r Sys.Date()`"
 ---
 
