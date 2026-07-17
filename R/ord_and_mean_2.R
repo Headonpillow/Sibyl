@@ -1,3 +1,28 @@
+#' Perform ordination and compute consensus coordinates
+#'
+#' Computes ordination (PCoA) using a configurable dissimilarity measure and
+#' aligns results across multiple replicate compositional matrices (e.g.
+#' rarefied count tables from `rep_raref()` or Dirichlet Monte Carlo draws
+#' from `rep_mc_draws()`) via Procrustes rotation. This is the second step
+#' shared by the repeated rarefaction and Dirichlet-based ordination
+#' algorithms.
+#' @param matrix_list A list of replicate count/compositional tables.
+#' @param repeats An integer. The number of replicates (rarefaction repeats
+#' or Monte Carlo draws).
+#' @param distance A string. The dissimilarity measure passed to
+#' `vegan::vegdist()`, e.g. `"bray"` for rarefied counts or `"aitchison"`
+#' for CLR-transformed compositional data.
+#' @param cores An integer. The number of cores to use.
+#' @return A list containing:
+#'   - `aligned_ordinations`: List of aligned ordinations.
+#'   - `consensus_coordinates`: Consensus coordinates using Procrustes alignment.
+#' @importFrom vegan vegdist procrustes
+#' @importFrom parallel makeCluster stopCluster
+#' @importFrom doParallel registerDoParallel
+#' @importFrom foreach foreach %dopar%
+#' @importFrom stats cmdscale
+#' @noRd
+#' @keywords internal
 ord_and_mean2 <- function(matrix_list, repeats, distance = "bray", cores = 2) {
   
   #========================= ordinations and plots generation

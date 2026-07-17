@@ -164,6 +164,46 @@ Overall in this worked example, data suggests that a threshold as low as 750 doe
 
 However, the package allowed us to explore the effect of different rarefaction thresholds, and to confirm that lowering a threshold to include more samples does not necessarily affect our exploratory analysis, which is still valid for relatively low threshold numbers.
 
+## Comparing rarefaction-based and probabilistic uncertainty
+
+So far, all of the uncertainty explored in this vignette comes from repeated rarefaction: for a fixed sequencing depth, we repeatedly sub-sample each sample's reads and observe how much the resulting ordination position moves around.
+
+**Sibyl** also provides an alternative way of representing compositional uncertainty, based on Monte Carlo sampling from the Dirichlet posterior distribution estimated by `ALDEx2::aldex.clr()`, implemented in `dirichlet_ordination()`. Instead of repeatedly sub-sampling reads, each Monte Carlo draw represents one plausible compositional state of the observed count data given its Dirichlet posterior. These replicate compositions are ordinated using Aitchison distances, aligned by Procrustes transformation, and summarized with consensus coordinates and uncertainty clouds, using the same downstream pipeline as `repeated_rarefaction()`.
+
+This makes it possible to directly compare the two sources of uncertainty on the same dataset: stochastic sub-sampling (rarefaction) versus probabilistic compositional modelling (Dirichlet).
+
+```{r, warning=FALSE, message=FALSE, cache=TRUE}
+rarefaction_result <- repeated_rarefaction(adults,
+                                           repeats = 50,
+                                           threshold = 150,
+                                           group = "location",
+                                           colorb = "location",
+                                           cloud = TRUE,
+                                           ellipse = TRUE)
+
+dirichlet_result <- dirichlet_ordination(adults,
+                                         draws = 50,
+                                         group = "location",
+                                         colorb = "location",
+                                         cloud = TRUE,
+                                         ellipse = TRUE)
+```
+
+```{r, warning=FALSE, out.width="98%", out.height=500, fig.width=10, fig.height=5, dpi = 500}
+ggpubr_installed <- requireNamespace("ggpubr", quietly = TRUE)
+if (!ggpubr_installed) {
+  message("Install 'ggpubr' to reproduce the vignette examples: install.packages('ggpubr')")
+}
+
+ggpubr::ggarrange(rarefaction_result$plot, dirichlet_result$plot,
+                  ncol = 2, common.legend = TRUE, legend = "right",
+                  labels = c("Rarefaction", "Dirichlet"))
+```
+
+Both panels show the same samples aligned by Procrustes rotation, with consensus (median) coordinates highlighted in red. Since the two workflows use different distance measures (Bray-Curtis for rarefaction, Aitchison for the Dirichlet approach) and different sources of stochasticity, the absolute scale and orientation of the two ordinations are not directly comparable point-by-point. What is comparable is the relative spread of each sample's cloud of repeats/draws: samples with lower sequencing depth tend to show a wider cloud under repeated rarefaction, since low depth means each sub-sample discards proportionally more of the observed community. The Dirichlet-based approach captures a related but distinct notion of uncertainty, arising from how confidently the observed counts pin down the underlying proportions, rather than from the act of discarding reads.
+
+Using both approaches side by side gives a more complete picture of how much of the variability observed in an ordination is attributable to the chosen sub-sampling scheme, versus how much reflects genuine uncertainty in the compositional estimate itself.
+
 # References
 
 -   Buck, M., Nilsson, L., Brunius, C. et al. Bacterial associations reveal spatial population dynamics in Anopheles gambiae mosquitoes. Sci Rep 6, 22806 (2016).
