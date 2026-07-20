@@ -1,8 +1,17 @@
 # Sibyl
 
-**Sibyl** is a package designed to test different rarefaction thresholds
-when normalizing microbial abundance data from 16S amplicon sequencing.
-It has been created to answer a simple question:“How low can you go”?
+**Sibyl** is an R package for evaluating how sequencing-depth, and thus
+uncertainty on community composition, affects beta-diversity
+ordinations. It accomplishes this through a repeated-ordination
+framework, generating alternative representations of the same microbial
+count data, ordinating them, aligning them by Procrustes transformation,
+and summarizing sample positions as consensus coordinates with
+uncertainty clouds. Sibyl currently supports two uncertainty-generation
+workflows: repeated rarefaction and Dirichlet Monte Carlo sampling
+through **ALDEx2**.
+
+The rarefaction workflow was Sibyl’s original motivation, created to
+answer a simple question: “How low can you go?”.
 
 # Installation
 
@@ -12,6 +21,7 @@ for Linux. Bioconductor repositories are added automatically for
 dependencies like **phyloseq**.
 
 ``` r
+
 # Sibyl requires R >= 4.2
 if (getRversion() < "4.2.0")
   stop("Sibyl requires R >= 4.2.0. Please update R and try again.", call. = FALSE)
@@ -56,27 +66,29 @@ sudo dnf install -y \
   lapack-devel blas-devel gcc-gfortran pkgconf-pkg-config
 ```
 
-# Why using Sibyl
+# Why use Sibyl
 
-The **Sibyl** package was created with the aim of testing the lower
-limit of rarefaction thresholds.
+Rarefaction threshold selection is one application of Sibyl’s
+repeated-ordination framework, not its only purpose. It remains a useful
+entry point, though: while microbial abundance data is slowly moving
+away from methods like rarefaction to account for differing library
+size, rarefaction has been extensively used and is still, in 2025,
+present in much of the available literature, and still discussed.
 
-While microbial abundance data is slowly moving away from methods like
-rarefaction to account for differing library size, rarefaction has been
-extensively used and still in 2025 is present in much of the available
-literature, and still discussed.
-
-When performing Principal Component Analysis (PCA) and other types of
-ordination, it is necessary making sure to choose a rarefaction
-threshold which does not impact the structure of the data, or our
-conclusions, during exploratory analysis. Usually, when chosing a
+When performing Principal Coordinates Analysis (PCoA) and other types of
+ordination, it is necessary to make sure that the chosen rarefaction
+threshold does not substantially affect the ordination structure, or our
+conclusions, during exploratory analysis. Usually, when choosing a
 rarefaction threshold researchers need to operate a compromise between
 describing samples accurately (completeness), and including more
 samples, which might sometimes not meet the selected threshold.
 
-**Sibyl** aims to solve that, allowing users to explore sample
-completeness, and the effect of rarefaction thresholds on ordinations,
-all with a single tool.
+**Sibyl** helps by letting users explore sample completeness and the
+effect of rarefaction thresholds on ordinations with a single tool. For
+datasets where discarding reads through rarefaction is undesirable, the
+same downstream framework is also available through Dirichlet Monte
+Carlo sampling (via **ALDEx2**), which evaluates compositional
+uncertainty without subsampling.
 
 # Package index
 
@@ -98,6 +110,14 @@ Performing either single or multiple instances of repeated rarefaction.
 - [`test_threshold()`](https://headonpillow.github.io/Sibyl/reference/test_threshold.md)
   : Test different rarefaction thresholds
 
+### Dirichlet Monte Carlo ordination
+
+Quantifying compositional uncertainty via Monte Carlo sampling from the
+Dirichlet posterior, as an alternative to repeated rarefaction.
+
+- [`dirichlet_ordination()`](https://headonpillow.github.io/Sibyl/reference/dirichlet_ordination.md)
+  : Perform Dirichlet Monte Carlo ordination
+
 ### Plotting
 
 Accessory plotting functions
@@ -118,4 +138,5 @@ Available datasets
 
 ### All vignettes
 
-- [Sibyl](https://headonpillow.github.io/Sibyl/articles/Sibyl.md):
+- [Evaluating sequencing-depth uncertainty with
+  Sibyl](https://headonpillow.github.io/Sibyl/articles/Sibyl.md):

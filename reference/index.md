@@ -18,6 +18,14 @@ Performing either single or multiple instances of repeated rarefaction.
 - [`test_threshold()`](https://headonpillow.github.io/Sibyl/reference/test_threshold.md)
   : Test different rarefaction thresholds
 
+### Dirichlet Monte Carlo ordination
+
+Quantifying compositional uncertainty via Monte Carlo sampling from the
+Dirichlet posterior, as an alternative to repeated rarefaction.
+
+- [`dirichlet_ordination()`](https://headonpillow.github.io/Sibyl/reference/dirichlet_ordination.md)
+  : Perform Dirichlet Monte Carlo ordination
+
 ### Plotting
 
 Accessory plotting functions

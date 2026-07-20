@@ -2,4 +2,5 @@
 
 ### All vignettes
 
-- [Sibyl](https://headonpillow.github.io/Sibyl/articles/Sibyl.md):
+- [Evaluating sequencing-depth uncertainty with
+  Sibyl](https://headonpillow.github.io/Sibyl/articles/Sibyl.md):

@@ -1,9 +1,9 @@
-pandoc: 3.1.11
-pkgdown: 2.2.0
+pandoc: 3.8.3
+pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   articles/Sibyl: Sibyl.html
-last_built: 2026-03-24T14:30Z
+last_built: 2026-07-20T11:20Z
 urls:
   reference: https://headonpillow.github.io/Sibyl/reference
   article: https://headonpillow.github.io/Sibyl/articles

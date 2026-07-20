@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="favicon.ico">
 <link rel="manifest" href="site.webmanifest">
 <script src="lightswitch.js"></script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Sibyl">
 <meta name="description" content="The Sibyl package provides a convenient way of testing a range of thresholds for rarefation, evaluating the effect of different values on ordination results, integrating with commonly used packages in microbial ecology. You provide phyloseq data with count data and sample information.">
@@ -66,7 +66,8 @@
 </div>
 <!-- badges: start -->
 
-<p><strong>Sibyl</strong> is a package designed to test different rarefaction thresholds when normalizing microbial abundance data from 16S amplicon sequencing. It has been created to answer a simple question:“How low can you go”?</p>
+<p><strong>Sibyl</strong> is an R package for evaluating how sequencing-depth, and thus uncertainty on community composition, affects beta-diversity ordinations. It accomplishes this through a repeated-ordination framework, generating alternative representations of the same microbial count data, ordinating them, aligning them by Procrustes transformation, and summarizing sample positions as consensus coordinates with uncertainty clouds. Sibyl currently supports two uncertainty-generation workflows: repeated rarefaction and Dirichlet Monte Carlo sampling through <strong>ALDEx2</strong>.</p>
+<p>The rarefaction workflow was Sibyl’s original motivation, created to answer a simple question: “How low can you go?”.</p>
 </div>
 <div class="section level1">
 <h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -107,12 +108,11 @@
 </details>
 </div>
 <div class="section level1">
-<h1 id="why-using-sibyl">Why using Sibyl<a class="anchor" aria-label="anchor" href="#why-using-sibyl"></a>
+<h1 id="why-use-sibyl">Why use Sibyl<a class="anchor" aria-label="anchor" href="#why-use-sibyl"></a>
 </h1>
-<p>The <strong>Sibyl</strong> package was created with the aim of testing the lower limit of rarefaction thresholds.</p>
-<p>While microbial abundance data is slowly moving away from methods like rarefaction to account for differing library size, rarefaction has been extensively used and still in 2025 is present in much of the available literature, and still discussed.</p>
-<p>When performing Principal Component Analysis (PCA) and other types of ordination, it is necessary making sure to choose a rarefaction threshold which does not impact the structure of the data, or our conclusions, during exploratory analysis. Usually, when chosing a rarefaction threshold researchers need to operate a compromise between describing samples accurately (completeness), and including more samples, which might sometimes not meet the selected threshold.</p>
-<p><strong>Sibyl</strong> aims to solve that, allowing users to explore sample completeness, and the effect of rarefaction thresholds on ordinations, all with a single tool.</p>
+<p>Rarefaction threshold selection is one application of Sibyl’s repeated-ordination framework, not its only purpose. It remains a useful entry point, though: while microbial abundance data is slowly moving away from methods like rarefaction to account for differing library size, rarefaction has been extensively used and is still, in 2025, present in much of the available literature, and still discussed.</p>
+<p>When performing Principal Coordinates Analysis (PCoA) and other types of ordination, it is necessary to make sure that the chosen rarefaction threshold does not substantially affect the ordination structure, or our conclusions, during exploratory analysis. Usually, when choosing a rarefaction threshold researchers need to operate a compromise between describing samples accurately (completeness), and including more samples, which might sometimes not meet the selected threshold.</p>
+<p><strong>Sibyl</strong> helps by letting users explore sample completeness and the effect of rarefaction thresholds on ordinations with a single tool. For datasets where discarding reads through rarefaction is undesirable, the same downstream framework is also available through Dirichlet Monte Carlo sampling (via <strong>ALDEx2</strong>), which evaluates compositional uncertainty without subsampling.</p>
 </div>
 
   </main><aside class="col-md-3"><div class="license">
@@ -157,7 +157,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>
