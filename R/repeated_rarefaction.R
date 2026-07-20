@@ -104,7 +104,7 @@ repeated_rarefaction <- function(input, repeats = 50, threshold = 250, colorb="s
   # Perform the different steps of the repeated rarefaction algorithm
   # Perform rarefactions (each replicate handled inside rep_raref)
   step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold, repeats, cores = cores)
-  step2 <- ord_and_mean(step1$rarefied_matrix_list, repeats, cores = cores)
+  step2 <- ord_and_mean(step1$rarefied_matrix_list, repeats, distance = "bray", cores = cores)
   step3 <- plot_rep_raref(step2$aligned_ordinations, step2$consensus_coordinates, sample_data(physeq), colorb, group, cloud, ellipse, "Aligned Ordinations with Consensus Overlaid")
 
   print(step3$plot)

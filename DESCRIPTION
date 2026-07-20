@@ -29,7 +29,8 @@ Imports:
     tidyr,
     purrr,
     broom,
-    magrittr
+    magrittr,
+    ALDEx2
 LazyData: true
 Suggests:
     rmarkdown,

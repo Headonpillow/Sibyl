@@ -124,7 +124,7 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
       }
       # Perform rarefaction for this threshold and repeat amount
       step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold = x, repeats = y, cores = cores, warning_collector = warningCollector)
-      step2 <- ord_and_mean(step1$rarefied_matrix_list, repeats, cores = cores)
+      step2 <- ord_and_mean(step1$rarefied_matrix_list, repeats, distance = "bray", cores = cores)
       # ============= AVERAGE PAIRWISE DISTANCE CALCULATION (THIS THRESHOLD)
       
       # Determine which samples are present in the ordination results.

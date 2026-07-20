@@ -6,9 +6,13 @@
 [![name status badge](https://headonpillow.r-universe.dev/badges/:name)](https://headonpillow.r-universe.dev/)
 <!-- badges: end -->
 
-**Sibyl** is a package designed to test different rarefaction thresholds when 
-normalizing microbial abundance data from 16S amplicon sequencing. It has been 
-created to answer a simple question:"How low can you go"?  
+**Sibyl** is an R package for evaluating how sequencing-depth, and thus uncertainty on community composition, affects beta-diversity ordinations. 
+It accomplishes this through a repeated-ordination framework, generating alternative representations of the same microbial count data, ordinating them, aligning them by Procrustes transformation, and summarizing sample positions
+as consensus coordinates with uncertainty clouds. Sibyl currently supports two
+uncertainty-generation workflows: repeated rarefaction and Dirichlet Monte Carlo sampling through **ALDEx2**.
+
+The rarefaction workflow was Sibyl's original motivation, created to answer a
+simple question: "How low can you go?".
 
 # Installation
 
@@ -64,22 +68,13 @@ sudo dnf install -y \
 
 </details> 
 
-# Why using Sibyl
+# Why use Sibyl
 
-The **Sibyl** package was created with the aim of testing the lower limit of
-rarefaction thresholds. 
+Rarefaction threshold selection is one application of Sibyl's repeated-ordination framework, not its only purpose. 
+It remains a useful entry point, though: while microbial abundance data is slowly moving away from methods like rarefaction to account for differing library size, rarefaction has been extensively used and is still, in 2025, present in much of the available literature, and still discussed.
 
-While microbial abundance data is slowly moving away from methods like rarefaction
-to account for differing library size, rarefaction has been extensively used 
-and still in 2025 is present in much of the available literature, and still 
-discussed.
+When performing Principal Coordinates Analysis (PCoA) and other types of ordination, it is necessary to make sure that the chosen rarefaction threshold does not substantially affect the ordination structure, or our conclusions, during exploratory analysis. Usually, when choosing a rarefaction threshold researchers need to operate a compromise between describing samples accurately (completeness), and including more samples, which might sometimes not meet the selected threshold.
 
-When performing Principal Component Analysis (PCA) and other types of ordination, 
-it is necessary making sure to choose a rarefaction threshold which does not 
-impact the structure of the data, or our conclusions, during exploratory analysis.
-Usually, when chosing a rarefaction threshold researchers need to operate a compromise 
-between describing samples accurately (completeness), and including more samples,
-which might sometimes not meet the selected threshold. 
-
-**Sibyl** aims to solve that, allowing users to explore sample completeness, 
-and the effect of rarefaction thresholds on ordinations, all with a single tool.
+**Sibyl** helps by letting users explore sample completeness and the effect of
+rarefaction thresholds on ordinations with a single tool. For datasets where
+discarding reads through rarefaction is undesirable, the same downstream framework is also available through Dirichlet Monte Carlo sampling (via **ALDEx2**), which evaluates compositional uncertainty without subsampling.
