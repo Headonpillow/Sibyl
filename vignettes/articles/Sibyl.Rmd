@@ -189,15 +189,15 @@ avg_pairwise_dist_plot(APD_plots)
 
 Overall in this worked example, data suggests that a threshold as low as 750 does not substantially affect the ordination structure (according to CH index), and does not affect the single sample position when repeating subsampling (looking at the APD plots). Despite that, when considering the accumulation curve we can also consider that 750 reads is most likely not enough to describe accurately our samples.
 
-The rarefaction workflow allowed us to explore the effect of different rarefaction thresholds, and to confirm that lowering a threshold to include more samples does not necessarily affect our exploratory analysis, which is still valid for relatively low threshold numbers. This is one application of Sibyl's repeated-ordination framework, focused specifically on threshold selection — the same framework can be used more generally to evaluate ordination uncertainty, as shown next.
+The rarefaction workflow allowed us to explore the effect of different rarefaction thresholds, and to confirm that lowering a threshold to include more samples does not necessarily affect our exploratory analysis, which is still valid for relatively low threshold numbers. This is one application of Sibyl's repeated-ordination framework, focused specifically on threshold selection. The same framework can be used more generally to evaluate ordination uncertainty, as shown next.
 
 # Probability-based workflow
 
-The Dirichlet workflow uses the same downstream repeated-ordination framework as the rarefaction workflow, but replaces subsampling with probability-based Monte Carlo sampling. This allows users to examine compositional uncertainty without discarding reads through rarefaction.
+The Dirichlet workflow uses the same downstream repeated-ordination framework as the rarefaction workflow, but allows users to examine compositional uncertainty without discarding reads through rarefaction.
 
-Instead of repeatedly subsampling reads, `dirichlet_ordination()` performs repeated Monte Carlo sampling from the Dirichlet posterior distribution estimated by `ALDEx2::aldex.clr()`. Each Monte Carlo draw represents one plausible compositional state of the observed count data, given its Dirichlet posterior. These replicate compositions are ordinated using **Aitchison distances**, aligned by Procrustes transformation, and summarized with consensus coordinates and uncertainty clouds, using the same downstream pipeline as `repeated_rarefaction()`.
+Instead of repeatedly subsampling reads, `dirichlet_ordination()` performs repeated Monte Carlo sampling from the Dirichlet posterior distribution estimated by `ALDEx2::aldex.clr()`. Each Monte Carlo draw represents one plausible compositional state of the observed count data, given its Dirichlet posterior. These replicate compositions are ordinated using **Aitchison distances**, aligned, and summarized with consensus coordinates and uncertainty clouds as per the rarefaction workflow.
 
-Its ordination clouds should be interpreted as probability-based compositional uncertainty, arising from how confidently the observed counts pin down the underlying proportions, rather than from the act of discarding reads through subsampling.
+Ordination clouds should be interpreted as probability-based compositional uncertainty, arising from how confidently the observed counts reflect the underlying community proportions. 
 
 ```{r, warning=FALSE, message=FALSE, cache=TRUE}
 rarefaction_result <- repeated_rarefaction(adults,
@@ -222,14 +222,14 @@ if (!ggpubr_installed) {
   message("Install 'ggpubr' to reproduce the vignette examples: install.packages('ggpubr')")
 }
 
-ggpubr::ggarrange(rarefaction_result$plot, dirichlet_result$plot,
-                  ncol = 2, common.legend = TRUE, legend = "right",
-                  labels = c("Rarefaction", "Dirichlet"))
+ggpubr::ggarrange(rarefaction_result$plot + ggtitle("Rarefaction"),
+                  dirichlet_result$plot + ggtitle("Dirichlet"),
+                  ncol = 2, common.legend = TRUE, legend = "right")
 ```
 
-Both panels show the same samples aligned by Procrustes rotation, with consensus coordinates highlighted in red. Its output can be compared conceptually with the rarefaction-based ordination clouds, but since the two workflows use different distance measures (Bray-Curtis for rarefaction, Aitchison for the Dirichlet approach) and different sources of stochasticity, the absolute orientation and scale of the two ordinations should not be overinterpreted point-by-point.
+Both panels show the same samples, with consensus coordinates highlighted in red. Output can be compared conceptually with the rarefaction-based ordination clouds, but since the two workflows use different distance measures (Bray-Curtis for rarefaction, Aitchison for the Dirichlet approach) and different sources of stochasticity, the absolute orientation and scale of the two ordinations should not be overinterpreted.
 
-What is comparable is the relative spread of each sample's cloud of repeats/draws: samples with lower sequencing depth tend to show a wider cloud under repeated rarefaction, since low depth means each subsample discards proportionally more of the observed community. The Dirichlet-based approach captures a related but distinct notion of uncertainty, arising from how confidently the observed counts pin down the underlying proportions, rather than from the act of discarding reads.
+What is comparable is the relative spread of each sample's cloud of repeats/draws: samples with lower sequencing depth tend to show a wider cloud under repeated rarefaction, since low depth means each subsample discards proportionally more of the observed community. The Dirichlet-based approach instead captures uncertainty in the estimated community composition given the observed counts, rather than uncertainty introduced by repeatedly discarding reads through rarefaction.
 
 Using both approaches side by side gives a more complete picture of how much of the variability observed in an ordination is attributable to the chosen subsampling scheme, versus how much reflects genuine uncertainty in the compositional estimate itself.
 
