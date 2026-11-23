@@ -9,7 +9,7 @@
 #' plot showing the distribution of these 75% completion thresholds.
 #'
 #' Sites that fail model fitting or quality-control criteria are excluded from
-#' downstream analyses, and their identities are returned for inspection.
+#' fitted-curve and suggested-depth summaries (not from the input dataset), and their identities are returned for inspection.
 #' 
 #' @param input A `phyloseq` object.
 #' @param step  A numeric value. The step size for drawing the accumulation curve.
@@ -33,7 +33,7 @@
 #' @importFrom tidyr nest unnest pivot_wider
 #' @importFrom purrr map map2 map_lgl
 #' @importFrom broom tidy augment
-#' @importFrom stats setNames density
+#' @importFrom stats setNames density nls nls.control median
 #' @importFrom ggplot2 ggplot aes geom_point geom_line scale_color_manual 
 #'   geom_vline facet_wrap theme_minimal labs geom_histogram geom_density
 #'   labeller after_stat
@@ -47,7 +47,7 @@
 #' accumulation_test(adults_sub, step=50)
 accumulation_test <- function(input, step = 5) {
   # Transform the phyloseq to a df of counts
-  counts <- as.data.frame(t(otu_table(input)))
+  counts <- sample_count_matrix(input)
   
   # Create a df out of rarefaction curves
   df <- rarecurve(counts, step = step, tidy = TRUE)
@@ -302,7 +302,7 @@ accumulation_test <- function(input, step = 5) {
     # Color legend
     scale_color_manual(
       name = "Data Type",
-      values = c("Observed" = "red", "Fitted" = "blue")
+      values = c("Observed" = "#D55E00", "Fitted" = "#0072B2")
     ) +
     # Facet with custom labels
     facet_wrap(~ Site, scales = "free_x", labeller = labeller(Site = labels_vector)) +
@@ -353,14 +353,14 @@ accumulation_test <- function(input, step = 5) {
       geom_point(
         data = site_points,
         aes(x = Sample, y = Species),
-        color = "red",
+        color = "#D55E00",
         alpha = 0.7
       ) +
       # Fitted line
       geom_line(
         data = site_fitted,
         aes(x = Sample, y = Species),
-        color = "blue",
+        color = "#0072B2",
         linewidth = 1
       ) +
       # Vertical line for 75% threshold

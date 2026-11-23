@@ -6,10 +6,10 @@
 #' PCoA-based visualization. It follows the same downstream pipeline as
 #' `repeated_rarefaction()` (alignment by Procrustes rotation and consensus
 #' coordinates), replacing repeated rarefaction with a probabilistic model
-#' of compositional uncertainty. This enables a direct comparison of
-#' uncertainty arising from stochastic subsampling versus probabilistic
-#' compositional modeling, while preserving an identical downstream analysis
-#' pipeline.
+#' of compositional uncertainty. This supports qualitative comparison of
+#' sample-sensitivity patterns under stochastic subsampling and probabilistic
+#' compositional modeling. The distance geometries differ, so numerical cloud
+#' sizes and absolute coordinates are not directly comparable.
 #'
 #' @param input A `phyloseq` object.
 #' @param draws An integer. The number of Monte Carlo draws to sample from
@@ -22,19 +22,26 @@
 #' `ALDEx2::aldex.clr()`. The parameter is also used to draw an ellipse
 #' around the points.
 #' @param cloud A boolean. If `TRUE`, all the data points generated from the
-#' Monte Carlo draws are shown. Otherwise, only the median points of each
+#' Monte Carlo draws are shown. Otherwise, only the consensus mean points of each
 #' sample draw cloud are plotted.
-#' @param ellipse A boolean. If `TRUE`, confidence ellipses around sample
+#' @param ellipse A boolean. If `TRUE`, descriptive ellipses around sample
 #' groups are drawn.
 #' @param cores An integer. Number of cores to use for parallel processing.
 #' @param ... Additional arguments are reserved to internal use.
 #' @return A list containing (While also showing the plot directly):
 #'   - `draws`: Number of Monte Carlo draws.
-#'   - `df_consensus_coordinates`: A data frame with coordinates of the median
+#'   - `df_consensus_coordinates`: A data frame with coordinates of the consensus mean
 #'   points of the sample clouds.
 #'   - `df_all`: A data frame of coordinates ordered by ordination number,
 #'   along with metadata.
-#'   - `plot`: a `ggplot` object.
+#'   - `plot`: a `ggplot` object with equal coordinate units.
+#'   - `axis_variance`: first-replicate axis percentages using the sum of absolute eigenvalues.
+#'   - `reference_eigenvalues`: eigenvalues of that reference PCoA.
+#' @details
+#' Scores retain native distance units; axes are not standardized separately.
+#' Percentages describe the first replicate used as the Procrustes reference,
+#' not an eigendecomposition of the consensus. Ellipses are descriptive,
+#' not inferential confidence intervals.
 #' @importFrom phyloseq sample_data otu_table sample_data<-
 #' @importFrom vegan procrustes
 #' @importFrom parallel makeCluster stopCluster
@@ -49,11 +56,11 @@
 #' # where the samples belonging to the same group will be colored similarly
 #' # and an ellipse will be drawn around the group.
 #' dirichlet_ordination(adults,
-#'                      draws = 10,
+#'                      draws = 128,
 #'                      group = "location",
 #'                      colorb = "location",
 #'                      cloud = TRUE,
-#'                      ellipse = TRUE)
+#'                      ellipse = TRUE, cores = 1)
 #' }
 dirichlet_ordination <- function(input, draws = 128, colorb="sample_id", group="sample_id", cloud = TRUE, ellipse = FALSE, cores = 2, ...) {
   # additional args (reserved for internal use)
@@ -81,12 +88,12 @@ dirichlet_ordination <- function(input, draws = 128, colorb="sample_id", group="
                   dirichlet_ordination needs an existing column to group samples by.", sep=""))
   }
   
-  if (!(is.double(draws))){
+  if (!is.numeric(draws) || any(!is.finite(draws)) || any(draws < 1) || any(draws != floor(draws))){
     stop(paste("Input for draws: '", draws, "' is not an integer.", sep=""))
   }
   
   if (draws <=4 & ellipse == TRUE){
-    warning("Too few MC draws to draw confidence ellipses. Proceeding with the available data.")
+    warning("Too few MC draws to draw descriptive ellipses. Proceeding with the available data.")
     ellipse <- FALSE
   }
   
@@ -95,11 +102,11 @@ dirichlet_ordination <- function(input, draws = 128, colorb="sample_id", group="
   
   # Perform the different steps of the dirichlet_ordination algorithm
   # Perform montecarlo draws from dirichlet distribution (each replicate handled inside rep_montecarlo_draws)
-  step1 <- rep_mc_draws(data.frame(t(otu_table(physeq))), draws, conds = conds, cores = cores)
+  step1 <- rep_mc_draws(sample_count_matrix(physeq), draws, conds = conds, cores = cores)
   step2 <- ord_and_mean(step1$dirichlet_matrix_list, draws, distance = "aitchison", cores = cores)
-  step3 <- plot_rep_raref(step2$aligned_ordinations, step2$consensus_coordinates, sample_data(physeq), colorb, group, cloud, ellipse, "Aligned Ordinations with Consensus Overlaid")
+  step3 <- plot_rep_raref(step2$aligned_ordinations, step2$consensus_coordinates, sample_data(physeq), colorb, group, cloud, ellipse, "Aligned Ordinations with Consensus Overlaid", axis_variance = step2$axis_variance)
   
   print(step3$plot)
   
-  return(invisible(list("draws" = draws, "df_consensus_coordinates" = step3$consensus_df, "df_all" = step3$df_all, "plot" = step3$plot)))
+  return(invisible(list("draws" = draws, "df_consensus_coordinates" = step3$consensus_df, "df_all" = step3$df_all, "plot" = step3$plot, "axis_variance" = step2$axis_variance, "reference_eigenvalues" = step2$reference_eigenvalues)))
 }

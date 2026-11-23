@@ -9,3 +9,7 @@
 ^vignettes/Sibyl_cache(/|$)
 
 ^vignettes/articles/Sibyl_cache(/|$)
+
+^\.zenodo\.json$
+
+^tests/testthat/Rplots\.pdf$
