@@ -33,11 +33,12 @@ Imports:
     ALDEx2
 LazyData: true
 Suggests:
+    patchwork,
     rmarkdown,
     withr,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Config/testthat/parallel: true
-Config/Needs/website: rmarkdown
+Config/Needs/website: rmarkdown, patchwork
 URL: https://headonpillow.github.io/Sibyl/
 Config/roxygen2/version: 8.1.1

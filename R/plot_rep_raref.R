@@ -77,9 +77,7 @@ plot_rep_raref <- function(aligned_ordinations, consensus_coordinates, info,
   if (!is.null(axis_variance)) {
     plot <- plot + ggplot2::labs(
       x = sprintf("PCoA 1 (%.1f%%)", axis_variance[1]),
-      y = sprintf("PCoA 2 (%.1f%%)", axis_variance[2]),
-      caption = paste("Axis percentages: first replicate, divided by the sum of",
-                      "absolute eigenvalues. Native scores; no axis standardization."))
+      y = sprintf("PCoA 2 (%.1f%%)", axis_variance[2]))
   }
   invisible(list(plot = plot, consensus_df = consensus_df,
                  df_all = aligned_df, updated_info = info))

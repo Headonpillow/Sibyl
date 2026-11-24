@@ -151,15 +151,18 @@ It is possible to see how the ordination changes according to the rarefaction th
 
 Thus, this also means that going under a specific rarefaction value might impact our ordination because of an artificial increase of point dispersal, which in turn introduces a bias creating an artificial overlap of two groups which are normally separated.
 
-```{r, warning=FALSE, out.width="98%", out.height="75%", fig.width=12, fig.height=4.5, dpi = 400}
+```{r, warning=FALSE, out.width="100%", fig.width=12, fig.height=4.5, dpi=400}
 # Print first, middle and last plot:
 n <- length(ordination_plots)
 # Get indices
 indices <- unique(c(1, ceiling(n / 2), n))
 selected_plots <- lapply(indices, function(i) ordination_plots[[i]])
 
-for (p in selected_plots) print(p)
+patchwork::wrap_plots(selected_plots, nrow = 1, guides = "collect") &
+  ggplot2::theme(legend.position = "bottom")
 ```
+
+Axis percentages refer to the first replicate used as the Procrustes reference, with the sum of absolute eigenvalues as denominator. Coordinates retain native units and equal axis scaling. Replicates are aligned within each depth; independently generated reference ordinations can have different axis orientations across depths.
 
 ### Average pairwise distance (APD)
 
@@ -188,7 +191,7 @@ Instead of repeatedly subsampling reads, `dirichlet_ordination()` performs repea
 
 Ordination clouds should be interpreted as probability-based compositional uncertainty, arising from how confidently the observed counts reflect the underlying community proportions. 
 
-```{r, warning=FALSE, message=FALSE, cache=TRUE}
+```{r, warning=FALSE, message=FALSE, cache=TRUE, fig.show="hide"}
 set.seed(20)
 rarefaction_result <- repeated_rarefaction(adults,
                                            repeats = 100,
@@ -207,9 +210,12 @@ dirichlet_result <- dirichlet_ordination(adults,
                                          ellipse = TRUE, cores = 1)
 ```
 
-```{r, warning=FALSE, out.width="98%", out.height=500, fig.width=10, fig.height=5, dpi = 500}
-print(rarefaction_result$plot + ggplot2::ggtitle("Rarefaction"))
-print(dirichlet_result$plot + ggplot2::ggtitle("Dirichlet"))
+```{r, warning=FALSE, out.width="100%", fig.width=10, fig.height=5, dpi=500}
+patchwork::wrap_plots(
+  rarefaction_result$plot + ggplot2::ggtitle("Rarefaction"),
+  dirichlet_result$plot + ggplot2::ggtitle("Dirichlet"),
+  nrow = 1, guides = "collect"
+) & ggplot2::theme(legend.position = "bottom")
 ```
 
 Both panels show the same samples, with consensus mean coordinates marked by hollow diamonds and groups identified using a discrete viridis palette. Output can be compared conceptually with the rarefaction-based ordination clouds, but since the two workflows use different distance measures (Bray-Curtis for rarefaction, Aitchison for the Dirichlet approach) and different sources of stochasticity, the absolute orientation and scale of the two ordinations should not be overinterpreted.
