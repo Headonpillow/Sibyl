@@ -9,9 +9,10 @@ pipeline as
 [`repeated_rarefaction()`](https://headonpillow.github.io/Sibyl/reference/repeated_rarefaction.md)
 (alignment by Procrustes rotation and consensus coordinates), replacing
 repeated rarefaction with a probabilistic model of compositional
-uncertainty. This enables a direct comparison of uncertainty arising
-from stochastic subsampling versus probabilistic compositional modeling,
-while preserving an identical downstream analysis pipeline.
+uncertainty. This supports qualitative comparison of sample-sensitivity
+patterns under stochastic subsampling and probabilistic compositional
+modeling. The distance geometries differ, so numerical cloud sizes and
+absolute coordinates are not directly comparable.
 
 ## Usage
 
@@ -54,12 +55,12 @@ dirichlet_ordination(
 - cloud:
 
   A boolean. If `TRUE`, all the data points generated from the Monte
-  Carlo draws are shown. Otherwise, only the median points of each
-  sample draw cloud are plotted.
+  Carlo draws are shown. Otherwise, only the consensus mean points of
+  each sample draw cloud are plotted.
 
 - ellipse:
 
-  A boolean. If `TRUE`, confidence ellipses around sample groups are
+  A boolean. If `TRUE`, descriptive ellipses around sample groups are
   drawn.
 
 - cores:
@@ -77,12 +78,24 @@ A list containing (While also showing the plot directly):
 - `draws`: Number of Monte Carlo draws.
 
 - `df_consensus_coordinates`: A data frame with coordinates of the
-  median points of the sample clouds.
+  consensus mean points of the sample clouds.
 
 - `df_all`: A data frame of coordinates ordered by ordination number,
   along with metadata.
 
-- `plot`: a `ggplot` object.
+- `plot`: a `ggplot` object with equal coordinate units.
+
+- `axis_variance`: first-replicate axis percentages using the sum of
+  absolute eigenvalues.
+
+- `reference_eigenvalues`: eigenvalues of that reference PCoA.
+
+## Details
+
+Scores retain native distance units; axes are not standardized
+separately. Percentages describe the first replicate used as the
+Procrustes reference, not an eigendecomposition of the consensus.
+Ellipses are descriptive, not inferential confidence intervals.
 
 ## Examples
 
@@ -93,14 +106,13 @@ library(Sibyl)
 # where the samples belonging to the same group will be colored similarly
 # and an ellipse will be drawn around the group.
 dirichlet_ordination(adults,
-                     draws = 10,
+                     draws = 128,
                      group = "location",
                      colorb = "location",
                      cloud = TRUE,
-                     ellipse = TRUE)
+                     ellipse = TRUE, cores = 1)
 #> conditions vector supplied
-#> multicore environment is is OK -- using the BiocParallel package
-#> Warning: values are unreliable when estimated with so few MC smps
+#> operating in serial mode
 #> computing center with all features
 
 # }

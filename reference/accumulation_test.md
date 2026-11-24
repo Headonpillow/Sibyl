@@ -51,8 +51,8 @@ which 75% of the ACE value is reached. It also produces a density plot
 showing the distribution of these 75% completion thresholds.
 
 Sites that fail model fitting or quality-control criteria are excluded
-from downstream analyses, and their identities are returned for
-inspection.
+from fitted-curve and suggested-depth summaries (not from the input
+dataset), and their identities are returned for inspection.
 
 ## Examples
 

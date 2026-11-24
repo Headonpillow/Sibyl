@@ -68,6 +68,9 @@ test_threshold(
 
 A list containing:
 
+- `index_data`: Numeric CH results in native PCoA coordinates, by depth
+  and repetition count.
+
 - `index_plot`: A `ggplot` object showing a scatterplot of
   Calinski-Harabasz index vs. rarefaction threshold.
 
@@ -75,9 +78,8 @@ A list containing:
   for tested threshold values. If multiple repeat values were used, each
   one will be present in a different list.
 
-- `avg_distances`: A data frame (or list of data frames if using
-  multiple repeat values) with average pairwise distances of the cloud
-  generated from each sample repetition attempts (for each threshold).
+- `avg_distances`: A list of data frames, named by repetition count,
+  containing each sample's average pairwise distance at each threshold.
 
 ## Details
 
@@ -87,17 +89,19 @@ sample cloud across different rarefaction thresholds, to give a measure
 of sample concordance (how stable the sample is at different
 thresholds).
 
-Higher index values are better, and the plateauing of the index values
-when testing higher thresholds indicate that the clouds of repetitions
-are compact enough to not being affected by increasing the threshold.
-The Calinski-Harabasz value takes into account both within cluster and
-between cluster distances, and in the scope of this function is
-calculated on the `group` parameter. A sudden drop in CH value means
-that samples might have been removed because they did not have enough
-reads to reach the threshold. In this case a warning is printed listing
-the samples which have been removed. In `avg_distances`, if samples do
-not have enough reads to reach `t_max` value, their APD are set to 0
-after that threshold and a warning message is printed.
+Higher CH values indicate stronger group separation in consensus
+coordinates. A plateau alone does not establish low positional
+uncertainty; inspect APD and retained-sample identities as well. CH uses
+native, unstandardized scores. The Calinski-Harabasz value takes into
+account both within cluster and between cluster distances, and in the
+scope of this function is calculated on the `group` parameter. CH is
+missing when fewer than two groups remain or no within-group degrees of
+freedom are available. A sudden drop in CH value means that samples
+might have been removed because they did not have enough reads to reach
+the threshold. In this case a warning is printed listing the samples
+which have been removed. In `avg_distances`, if samples do not have
+enough reads to reach `t_max` value, their APD are set to NA after that
+threshold and a warning message is printed.
 
 ## Examples
 
@@ -109,6 +113,6 @@ result <- test_threshold(adults,
                          t_max = 500, 
                          t_step = 50, 
                          group = "location", 
-                         verbose = FALSE)
+                         verbose = FALSE, cores = 1)
 result$index_plot
 ```

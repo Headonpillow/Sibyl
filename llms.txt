@@ -66,6 +66,49 @@ sudo dnf install -y \
   lapack-devel blas-devel gcc-gfortran pkgconf-pkg-config
 ```
 
+# Quick start
+
+``` r
+
+library(Sibyl)
+data("adults", package = "Sibyl")
+
+# A small demonstration scan; choose the range for your own study.
+set.seed(20)
+result <- test_threshold(
+  adults, repeats = 10, t_min = 100, t_max = 500, t_step = 100,
+  group = "location", cores = 1, verbose = FALSE
+)
+result$index_plot
+result$index_data
+avg_pairwise_dist_plot(result$avg_distances$repeat_number_10)
+
+# Inspect sample-position variability at one illustrative depth.
+set.seed(20)
+ordination <- repeated_rarefaction(
+  adults, repeats = 10, threshold = 500,
+  group = "location", colorb = "location", cloud = TRUE, cores = 1
+)
+ordination$df_consensus_coordinates
+```
+
+These depths and repetition counts illustrate the interface; they are
+not a recommended analysis setting. For the full rarefaction and
+Dirichlet workflows, see the [online documentation
+article](https://headonpillow.github.io/Sibyl/articles/Sibyl.html). It
+is a website article and is not installed as an R package vignette.
+
+Ordination plots retain native PCoA scores with equal coordinate units.
+Axis percentages describe the first replicate (the Procrustes
+reference), with each eigenvalue divided by the sum of absolute
+eigenvalues; they are not percentages from a separate decomposition of
+the consensus. Colours use a discrete viridis palette and hollow
+diamonds mark consensus mean positions. CH is calculated from native
+consensus coordinates. Samples excluded at a depth have missing APD, not
+zero dispersion. A CH plateau should be assessed alongside APD and
+sample retention rather than treated as an automatic threshold-selection
+rule.
+
 # Why use Sibyl
 
 Rarefaction threshold selection is one application of Sibyl’s

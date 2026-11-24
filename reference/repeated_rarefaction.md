@@ -2,8 +2,8 @@
 
 This function performs repeated rarefaction on a `phyloseq` object,
 computes ordination, and generates a PCoA-based visualization. The same
-procedure is used from `threshold_testing` function when testing a range
-of thresholds.
+procedure is used from `test_threshold` function when testing a range of
+thresholds.
 
 ## Usage
 
@@ -49,12 +49,12 @@ repeated_rarefaction(
 - cloud:
 
   A boolean. If `TRUE`, all the data points generated from repetitions
-  are shown. Otherwise, only the median points of each sample repetition
-  cloud are plotted.
+  are shown. Otherwise, only the consensus mean points of each sample
+  repetition cloud are plotted.
 
 - ellipse:
 
-  A boolean. If `TRUE`, confidence ellipses around sample groups are
+  A boolean. If `TRUE`, descriptive ellipses around sample groups are
   drawn.
 
 - cores:
@@ -72,12 +72,24 @@ A list containing (While also showing the plot directly):
 - `repeats`: Number of repeats.
 
 - `df_consensus_coordinates`: A data frame with coordinates of the
-  median points of the sample clouds.
+  consensus mean points of the sample clouds.
 
 - `df_all`: A data frame of coordinates ordered by ordination number,
   along with metatata.
 
-- `plot`: a `ggplot` object.
+- `plot`: a `ggplot` object with equal coordinate units.
+
+- `axis_variance`: first-replicate axis percentages using the sum of
+  absolute eigenvalues.
+
+- `reference_eigenvalues`: eigenvalues of that reference PCoA.
+
+## Details
+
+Scores retain native distance units; axes are not standardized
+separately. Percentages describe the first replicate used as the
+Procrustes reference, not an eigendecomposition of the consensus.
+Ellipses are descriptive, not inferential confidence intervals.
 
 ## Examples
 
@@ -92,7 +104,7 @@ repeated_rarefaction(adults,
                      group = "location", 
                      colorb = "location", 
                      cloud = TRUE, 
-                     ellipse = TRUE)
+                     ellipse = TRUE, cores = 1)
 
                      
 # We can run the function to highlight the spread of the single sample clouds
@@ -103,5 +115,5 @@ repeated_rarefaction(adults,
                      group = "sample_id", 
                      colorb = "location", 
                      cloud = TRUE, 
-                     ellipse = TRUE)
+                     ellipse = TRUE, cores = 1)
 ```
