@@ -19,7 +19,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macos-latest,   r: 'release'}
+          # Use the Intel pool while GitHub's macOS ARM runners face capacity constraints.
+          - {os: macos-15-intel, r: 'release'}
           - {os: windows-latest, r: 'release'}
           - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
           - {os: ubuntu-latest,   r: 'release'}
