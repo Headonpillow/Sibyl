@@ -65,8 +65,11 @@ The resulting list contains:
 
 Let's take a look at the first 4 individual accumulation plots:
 
-```{r, warning=FALSE, out.width="98%", out.height=500, fig.width=8, fig.height=6, dpi = 500}
-for (p in accumulation_result$individual_plots[1:4]) print(p)
+```{r, warning=FALSE, out.width="100%", fig.width=8, fig.height=6, dpi=500}
+patchwork::wrap_plots(
+  accumulation_result$individual_plots[1:4],
+  nrow = 2, ncol = 2
+)
 ```
 
 The density plot is a visual summary of the range at which most of the 75% thresholds calculated on the dataset fell.
