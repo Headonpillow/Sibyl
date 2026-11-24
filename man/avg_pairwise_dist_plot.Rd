@@ -4,10 +4,12 @@
 \alias{avg_pairwise_dist_plot}
 \title{Plot average pairwise distance across thresholds}
 \usage{
-avg_pairwise_dist_plot(avg_distances)
+avg_pairwise_dist_plot(avg_distances, show_legend = FALSE)
 }
 \arguments{
 \item{avg_distances}{A dataframe of average distances obtained from \code{test_threshold}.}
+
+\item{show_legend}{Logical. Show the redundant sample legend? Default FALSE.}
 }
 \value{
 A \code{ggplot} object showing average pairwise distances across thresholds.
@@ -19,13 +21,13 @@ This function it's a plotting function for \code{avg_distances} generated from
 \examples{
 library(Sibyl)
 # Creating a smaller subset of the data
-adults_sub <- phyloseq::subset_samples(adults, location=="VK3")
+adults_sub <- adults
 result <- test_threshold(adults_sub, 
                          repeats = 10, 
                          t_min = 100, 
                          t_max = 500, 
                          t_step = 50, 
                          group = "location",
-                         verbose = FALSE)
+                         verbose = FALSE, cores = 1)
 avg_pairwise_dist_plot(result$avg_distances$repeat_number_10)
 }

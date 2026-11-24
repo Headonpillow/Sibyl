@@ -31,10 +31,10 @@ samples, and to condition the Dirichlet sampling performed by
 around the points.}
 
 \item{cloud}{A boolean. If \code{TRUE}, all the data points generated from the
-Monte Carlo draws are shown. Otherwise, only the median points of each
+Monte Carlo draws are shown. Otherwise, only the consensus mean points of each
 sample draw cloud are plotted.}
 
-\item{ellipse}{A boolean. If \code{TRUE}, confidence ellipses around sample
+\item{ellipse}{A boolean. If \code{TRUE}, descriptive ellipses around sample
 groups are drawn.}
 
 \item{cores}{An integer. Number of cores to use for parallel processing.}
@@ -45,11 +45,13 @@ groups are drawn.}
 A list containing (While also showing the plot directly):
 \itemize{
 \item \code{draws}: Number of Monte Carlo draws.
-\item \code{df_consensus_coordinates}: A data frame with coordinates of the median
+\item \code{df_consensus_coordinates}: A data frame with coordinates of the consensus mean
 points of the sample clouds.
 \item \code{df_all}: A data frame of coordinates ordered by ordination number,
 along with metadata.
-\item \code{plot}: a \code{ggplot} object.
+\item \code{plot}: a \code{ggplot} object with equal coordinate units.
+\item \code{axis_variance}: first-replicate axis percentages using the sum of absolute eigenvalues.
+\item \code{reference_eigenvalues}: eigenvalues of that reference PCoA.
 }
 }
 \description{
@@ -59,10 +61,16 @@ object, computes ordination using Aitchison distances, and generates a
 PCoA-based visualization. It follows the same downstream pipeline as
 \code{repeated_rarefaction()} (alignment by Procrustes rotation and consensus
 coordinates), replacing repeated rarefaction with a probabilistic model
-of compositional uncertainty. This enables a direct comparison of
-uncertainty arising from stochastic subsampling versus probabilistic
-compositional modeling, while preserving an identical downstream analysis
-pipeline.
+of compositional uncertainty. This supports qualitative comparison of
+sample-sensitivity patterns under stochastic subsampling and probabilistic
+compositional modeling. The distance geometries differ, so numerical cloud
+sizes and absolute coordinates are not directly comparable.
+}
+\details{
+Scores retain native distance units; axes are not standardized separately.
+Percentages describe the first replicate used as the Procrustes reference,
+not an eigendecomposition of the consensus. Ellipses are descriptive,
+not inferential confidence intervals.
 }
 \examples{
 library(Sibyl)
@@ -71,10 +79,10 @@ library(Sibyl)
 # where the samples belonging to the same group will be colored similarly
 # and an ellipse will be drawn around the group.
 dirichlet_ordination(adults,
-                     draws = 10,
+                     draws = 128,
                      group = "location",
                      colorb = "location",
                      cloud = TRUE,
-                     ellipse = TRUE)
+                     ellipse = TRUE, cores = 1)
 }
 }

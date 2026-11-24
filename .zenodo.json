@@ -1,0 +1,9 @@
+{
+  "title": "Sibyl",
+  "upload_type": "software",
+  "creators": [
+    {"name": "Assentato, Lorenzo", "orcid": "0000-0003-3699-0483"},
+    {"name": "Pölder, Magdalena"}
+  ],
+  "license": "GPL-3.0-or-later"
+}

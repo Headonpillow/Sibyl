@@ -47,30 +47,29 @@ rep_raref <- function(count, threshold, repeats, cores = 2, ...) {
   
   # Remove problematic samples
   count_filtered <- count[row_totals >= threshold, , drop = FALSE]
-  count <- count_filtered
+  count <- as.matrix(count_filtered)
   
   # Set up working files
   rarefied_matrices <- list()
   
-  # Set up parallel backend
-  cl <- makeCluster(cores)
-  registerDoParallel(cl)
-  
-  # generate per-iteration seeds in the master process
-  # This is randomly sampling integers up to the maximum integer size
-  # This ensures different seeds across different runs (creates as many 
-  # unique seeds as repeats)
   per_iter_seeds <- sample.int(.Machine$integer.max, size = repeats)
-
-  # perform rarefactions: each worker sets its own seed from per_iter_seeds
-  # to ensure reproducibility and avoid weird correlations
-  rarefied_matrices <- foreach(i = 1:repeats, .packages = "vegan") %dopar% {
-    set.seed(per_iter_seeds[i])
-    rrarefy(count, sample = threshold)
+  rarefy_one <- function(seed, count, threshold) {
+    set.seed(seed)
+    vegan::rrarefy(count, sample = threshold)
   }
-  
-  # Stop the cluster
-  suppressWarnings(stopCluster(cl))
-  
+  # Workers need only the explicit arguments and vegan, not the package frame.
+  environment(rarefy_one) <- baseenv()
+  if (cores == 1) {
+    rng_state <- .Random.seed
+    on.exit(assign(".Random.seed", rng_state, envir = .GlobalEnv), add = TRUE)
+    rarefied_matrices <- lapply(per_iter_seeds, rarefy_one,
+                               count = count, threshold = threshold)
+  } else {
+    cl <- parallel::makeCluster(cores)
+    on.exit(parallel::stopCluster(cl), add = TRUE)
+    rarefied_matrices <- parallel::parLapply(
+      cl, per_iter_seeds, rarefy_one, count = count, threshold = threshold)
+  }
+
   return(invisible(list("rarefied_matrix_list"=rarefied_matrices)))
 }

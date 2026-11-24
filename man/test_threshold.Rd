@@ -45,14 +45,14 @@ calculation of the Calinski-Harabasz index.}
 \value{
 A list containing:
 \itemize{
+\item \code{index_data}: Numeric CH results in native PCoA coordinates, by depth and repetition count.
 \item \code{index_plot}: A \code{ggplot} object showing a scatterplot of
 Calinski-Harabasz index vs. rarefaction threshold.
 \item \code{ordination_plots}: A list of lists containing the ordination plots for
 tested threshold values. If multiple repeat values were used, each one
 will be present in a different list.
-\item \code{avg_distances}: A data frame (or list of data frames if using multiple
-repeat values) with average pairwise distances of the cloud generated from
-each sample repetition attempts (for each threshold).
+\item \code{avg_distances}: A list of data frames, named by repetition count,
+containing each sample's average pairwise distance at each threshold.
 }
 }
 \description{
@@ -65,17 +65,19 @@ The function also calculates the average pairwise distance for each sample
 cloud across different rarefaction thresholds, to give a measure of sample
 concordance (how stable the sample is at different thresholds).
 
-Higher index values are better, and the plateauing of the index values when
-testing higher thresholds indicate that the clouds of repetitions are compact
-enough to not being affected by increasing the threshold.
+Higher CH values indicate stronger group separation in consensus coordinates.
+A plateau alone does not establish low positional uncertainty; inspect APD
+and retained-sample identities as well. CH uses native, unstandardized scores.
 The Calinski-Harabasz value takes into account both within cluster and between
 cluster distances, and in the scope of this function is calculated on the
 \code{group} parameter.
+CH is missing when fewer than two groups remain or no within-group
+degrees of freedom are available.
 A sudden drop in CH value means that samples might have been removed because
 they did not have enough reads to reach the threshold. In this case a warning
 is printed listing the samples which have been removed.
 In \code{avg_distances}, if samples do not have enough reads to reach \code{t_max} value, their
-APD are set to 0 after that threshold and a warning message is printed.
+APD are set to NA after that threshold and a warning message is printed.
 }
 \examples{
 library(Sibyl)
@@ -85,6 +87,6 @@ result <- test_threshold(adults,
                          t_max = 500, 
                          t_step = 50, 
                          group = "location", 
-                         verbose = FALSE)
+                         verbose = FALSE, cores = 1)
 result$index_plot
 }

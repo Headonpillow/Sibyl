@@ -7,64 +7,89 @@ export(avg_pairwise_dist_plot)
 export(dirichlet_ordination)
 export(repeated_rarefaction)
 export(test_threshold)
-importFrom(ALDEx2,aldex.clr)
-importFrom(ALDEx2,getDirichletSample)
-importFrom(broom,augment)
-importFrom(broom,tidy)
+importFrom(ALDEx2,
+  aldex.clr,
+  getDirichletSample
+)
+importFrom(broom,
+  augment,
+  tidy
+)
 importFrom(clusterSim,index.G1)
 importFrom(doParallel,registerDoParallel)
-importFrom(dplyr,group_by)
-importFrom(dplyr,left_join)
-importFrom(dplyr,mutate)
-importFrom(dplyr,rename)
-importFrom(dplyr,select)
-importFrom(dplyr,summarise)
-importFrom(dplyr,tibble)
-importFrom(dplyr,ungroup)
-importFrom(foreach,"%dopar%")
-importFrom(foreach,foreach)
-importFrom(ggplot2,aes)
-importFrom(ggplot2,after_stat)
-importFrom(ggplot2,element_text)
-importFrom(ggplot2,facet_wrap)
-importFrom(ggplot2,geom_density)
-importFrom(ggplot2,geom_histogram)
-importFrom(ggplot2,geom_line)
-importFrom(ggplot2,geom_point)
-importFrom(ggplot2,geom_smooth)
-importFrom(ggplot2,geom_vline)
-importFrom(ggplot2,ggplot)
-importFrom(ggplot2,ggtitle)
-importFrom(ggplot2,labeller)
-importFrom(ggplot2,labs)
-importFrom(ggplot2,scale_color_manual)
-importFrom(ggplot2,stat_ellipse)
-importFrom(ggplot2,theme)
-importFrom(ggplot2,theme_minimal)
-importFrom(ggplot2,xlab)
-importFrom(ggplot2,xlim)
-importFrom(ggplot2,ylab)
-importFrom(ggplot2,ylim)
+importFrom(dplyr,
+  group_by,
+  left_join,
+  mutate,
+  rename,
+  select,
+  summarise,
+  tibble,
+  ungroup
+)
+importFrom(foreach,
+  "%dopar%",
+  foreach
+)
+importFrom(ggplot2,
+  aes,
+  after_stat,
+  element_text,
+  facet_wrap,
+  geom_density,
+  geom_histogram,
+  geom_line,
+  geom_point,
+  geom_smooth,
+  geom_vline,
+  ggplot,
+  ggtitle,
+  labeller,
+  labs,
+  scale_color_manual,
+  stat_ellipse,
+  theme,
+  theme_minimal,
+  xlab,
+  xlim,
+  ylab,
+  ylim
+)
 importFrom(magrittr,"%>%")
-importFrom(parallel,makeCluster)
-importFrom(parallel,stopCluster)
-importFrom(phyloseq,"sample_data<-")
-importFrom(phyloseq,otu_table)
-importFrom(phyloseq,sample_data)
-importFrom(phyloseq,subset_samples)
-importFrom(purrr,map)
-importFrom(purrr,map2)
-importFrom(purrr,map_lgl)
-importFrom(stats,cmdscale)
-importFrom(stats,density)
-importFrom(stats,dist)
-importFrom(stats,setNames)
-importFrom(tidyr,nest)
-importFrom(tidyr,pivot_wider)
-importFrom(tidyr,unnest)
+importFrom(parallel,
+  makeCluster,
+  stopCluster
+)
+importFrom(phyloseq,
+  "sample_data<-",
+  otu_table,
+  sample_data,
+  subset_samples
+)
+importFrom(purrr,
+  map,
+  map2,
+  map_lgl
+)
+importFrom(stats,
+  cmdscale,
+  density,
+  dist,
+  median,
+  nls,
+  nls.control,
+  setNames
+)
+importFrom(tidyr,
+  nest,
+  pivot_wider,
+  unnest
+)
 importFrom(utils,capture.output)
-importFrom(vegan,estimateR)
-importFrom(vegan,procrustes)
-importFrom(vegan,rarecurve)
-importFrom(vegan,rrarefy)
-importFrom(vegan,vegdist)
+importFrom(vegan,
+  estimateR,
+  procrustes,
+  rarecurve,
+  rrarefy,
+  vegdist
+)

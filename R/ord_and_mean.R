@@ -24,80 +24,38 @@
 #' @noRd
 #' @keywords internal
 ord_and_mean <- function(matrix_list, replicates, distance = "bray", cores = 2) {
-  
-  #========================= ordinations and plots generation
-  
-  # Initialize a list to store ordinations
-  ordinations <- list()
-  
-  # Set up parallel backend
-  cl <- makeCluster(cores)
-  registerDoParallel(cl)
-  
-  # Perform parallel computation using foreach
-  results <- foreach(
-    i = 1:length(matrix_list), 
-    .packages = c('vegan', 'stats')
-    ) %dopar% {
-    
-    # Calculate distance
-    dist_matrix <- vegdist(matrix_list[[i]], method = distance)
-    # Perform PCoA (Principal Coordinates Analysis)
-    ordination <- cmdscale(dist_matrix, k = 2)
-    
-    # # Convert ordination result to data frame
-    # ord_df <- as.data.frame(ordination)
-    # colnames(ord_df) <- c("PCoA1", "PCoA1")
-    # ord_df$Sample <- rownames(ordination)
-    
-    # Ensure rownames from the original DF are transfered
-    rownames(ordination) <- rownames(matrix_list[[i]])
-    
-    # Return a list containing the ordination and the plot
-    list(ordination = ordination)
-  }
-  
-  # Stop the cluster after computation
-  suppressWarnings(stopCluster(cl))
-  
-  # Extract ordinations and plots from the results
-  for (i in seq_along(results)) {
-    ordinations[[i]] <- results[[i]]$ordination
-  }
-  
-  #================================ procrustes
-  
-  # Perform Procrustes analysis to align all ordinations to the first one
-  aligned_ordinations <- lapply(
-    ordinations, 
-    function(x) {
-      fit <- procrustes(ordinations[[1]], x, scale = FALSE)
-      y <- fit$Yrot
-      rownames(y) <- rownames(ordinations[[1]])
-      colnames(y) <- colnames(ordinations[[1]])
-      y
+  ordinate <- function(counts, distance) {
+    # Zero-only features contribute nothing to Bray-Curtis dissimilarities.
+    if (identical(distance, "bray")) {
+      counts <- counts[, colSums(counts) > 0, drop = FALSE]
     }
-  )
-  
-  # Convert list to array for consensus calculation
-  aligned_array <- array(
-    unlist(aligned_ordinations), 
-    dim = c(
-      nrow(aligned_ordinations[[1]]), 
-      ncol(aligned_ordinations[[1]]), 
-      length(aligned_ordinations)
-      )
-    )
-  
-  # Compute consensus coordinates as the arithmetic mean across replicates (3rd dimension)
-  consensus_coords <- apply(aligned_array, c(1, 2), mean, na.rm = TRUE)
-  rownames(consensus_coords) <- rownames(aligned_ordinations[[1]])
-  colnames(consensus_coords) <- colnames(aligned_ordinations[[1]])
-  
-  return(
-    invisible(list(
-    "aligned_ordinations" = aligned_ordinations, 
-    "consensus_coordinates" = consensus_coords
-    ))
-  )
+    d <- vegan::vegdist(counts, method = distance)
+    fit <- stats::cmdscale(d, k = 2, eig = TRUE)
+    rownames(fit$points) <- rownames(counts)
+    list(ordination = fit$points, eigenvalues = fit$eig)
+  }
+  # Do not serialize the enclosing frame and its full replicate list to workers.
+  environment(ordinate) <- baseenv()
+  if (cores == 1) {
+    results <- lapply(matrix_list, ordinate, distance = distance)
+  } else {
+    cl <- parallel::makeCluster(cores)
+    on.exit(parallel::stopCluster(cl), add = TRUE)
+    results <- parallel::parLapply(cl, matrix_list, ordinate, distance = distance)
+  }
+  ordinations <- lapply(results, `[[`, "ordination")
+  aligned <- lapply(ordinations, function(x) {
+    y <- vegan::procrustes(ordinations[[1]], x, scale = FALSE)$Yrot
+    dimnames(y) <- dimnames(ordinations[[1]])
+    y
+  })
+  consensus <- Reduce(`+`, aligned) / length(aligned)
+  # Labels refer to the first (reference) configuration, not the rotated
+  # replicate axes or a supposed eigendecomposition of the mean coordinates.
+  eigenvalues <- results[[1]]$eigenvalues
+  axis_variance <- 100 * pmax(eigenvalues[1:2], 0) / sum(abs(eigenvalues))
+  invisible(list(aligned_ordinations = aligned,
+                 consensus_coordinates = consensus,
+                 axis_variance = axis_variance,
+                 reference_eigenvalues = eigenvalues))
 }

@@ -25,26 +25,28 @@
 #' @param verbose A logical. If `TRUE`, prints messages during the execution.
 #' @param ... Additional arguments are reserved to internal use.
 #' @return A list containing:
+#'   - `index_data`: Numeric CH results in native PCoA coordinates, by depth and repetition count.
 #'   - `index_plot`: A `ggplot` object showing a scatterplot of 
 #'   Calinski-Harabasz index vs. rarefaction threshold.
 #'   - `ordination_plots`: A list of lists containing the ordination plots for 
 #'   tested threshold values. If multiple repeat values were used, each one
 #'   will be present in a different list.
-#'   - `avg_distances`: A data frame (or list of data frames if using multiple 
-#'   repeat values) with average pairwise distances of the cloud generated from 
-#'   each sample repetition attempts (for each threshold).
+#'   - `avg_distances`: A list of data frames, named by repetition count,
+#'   containing each sample's average pairwise distance at each threshold.
 #' @details
-#' Higher index values are better, and the plateauing of the index values when 
-#' testing higher thresholds indicate that the clouds of repetitions are compact
-#' enough to not being affected by increasing the threshold. 
+#' Higher CH values indicate stronger group separation in consensus coordinates.
+#' A plateau alone does not establish low positional uncertainty; inspect APD
+#' and retained-sample identities as well. CH uses native, unstandardized scores.
 #' The Calinski-Harabasz value takes into account both within cluster and between
 #' cluster distances, and in the scope of this function is calculated on the
 #' `group` parameter. 
+#' CH is missing when fewer than two groups remain or no within-group
+#' degrees of freedom are available.
 #' A sudden drop in CH value means that samples might have been removed because 
 #' they did not have enough reads to reach the threshold. In this case a warning
 #' is printed listing the samples which have been removed.
 #' In `avg_distances`, if samples do not have enough reads to reach `t_max` value, their
-#' APD are set to 0 after that threshold and a warning message is printed.
+#' APD are set to NA after that threshold and a warning message is printed.
 #' @importFrom phyloseq sample_data otu_table sample_data<- subset_samples
 #' @importFrom vegan vegdist
 #' @importFrom clusterSim index.G1
@@ -60,7 +62,7 @@
 #'                          t_max = 500, 
 #'                          t_step = 50, 
 #'                          group = "location", 
-#'                          verbose = FALSE)
+#'                          verbose = FALSE, cores = 1)
 #' result$index_plot
 test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step = 5, group = "sample_id", cores = 2, verbose = TRUE, ...) {
   # additional args (reserved for internal use)
@@ -88,7 +90,7 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
                   repeated_rarefaction needs an existing column to group samples by.", sep=""))
   }
   
-  if (!(is.double(repeats))){
+  if (!is.numeric(repeats) || any(!is.finite(repeats)) || any(repeats < 1) || any(repeats != floor(repeats))){
     stop(paste("Input for repeats: '", repeats, "' is not an integer.", sep=""))
   }
   
@@ -115,6 +117,7 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
     # amount and centroid coordinates.
     ordination_points <- list()
     consensus_coordinates <- list()
+    axis_variances <- list()
     # Initialize also a data frame to store pairwise distances of samples point clouds.
     avg_distances <- data.frame(Sample_ID = character(0), Threshold = numeric(0), Avg_Distance = numeric(0))
     
@@ -123,8 +126,9 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
         message(paste("Running with", y, "repeats and", x, "threshold"))
       }
       # Perform rarefaction for this threshold and repeat amount
-      step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold = x, repeats = y, cores = cores, warning_collector = warningCollector)
-      step2 <- ord_and_mean(step1$rarefied_matrix_list, repeats, distance = "bray", cores = cores)
+      step1 <- rep_raref(sample_count_matrix(physeq), threshold = x, repeats = y, cores = cores, warning_collector = warningCollector)
+      step2 <- ord_and_mean(step1$rarefied_matrix_list, y, distance = "bray", cores = cores)
+      axis_variances[[paste0("threshold_", x)]] <- step2$axis_variance
       # ============= AVERAGE PAIRWISE DISTANCE CALCULATION (THIS THRESHOLD)
       
       # Determine which samples are present in the ordination results.
@@ -133,8 +137,8 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
       # Calculate average pairwise distance for each sample.
       for (sample_id in sample_ids) {
         if (!(sample_id %in% present_samples)) {
-          # Sample did not meet threshold: assign distance = 0
-          avg_distance <- 0
+          # An excluded sample has no cloud: missing, not zero uncertainty.
+          avg_distance <- NA_real_
         } else {
           # Extract the coordinates for this sample from each replicate.
           # Here we loop over the aligned ordinations and grab the row corresponding to sample_id.
@@ -180,42 +184,20 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
       do.call(rbind, sublist)
     })
     
-    # ================================== NORMALIZATION OF THE COORDINATES
-    
-    # Normalize all coordinates to unit variance:
-    
-    # Combine all points across all thresholds to compute global scaling parameters
-    all_points <- do.call(rbind, flattened_list)
-    
-    # Compute global means and sds for each axis
-    axis_means <- colMeans(all_points, na.rm = TRUE)
-    axis_sds   <- apply(all_points, 2, sd, na.rm = TRUE)
-    
-    # Define a normalization function
-    normalize_coords <- function(mat, means, sds) {
-      sweep(sweep(mat, 2, means, "-"), 2, sds, "/")
-    }
-    
-    # Normalize each threshold's ordination points
-    scaled_points <- lapply(flattened_list, function(x) normalize_coords(x, axis_means, axis_sds))
-    
-    # Determine global axis limits after normalization (with some tolerance)
-    all_scaled_points <- do.call(rbind, scaled_points)
-    x_limits <- range(all_scaled_points[, 1], na.rm = TRUE)
-    y_limits <- range(all_scaled_points[, 2], na.rm = TRUE)
-    x_limits <- c(x_limits[1] - 0.2, x_limits[2] + 0.2)
-    y_limits <- c(y_limits[1] - 0.2, y_limits[2] + 0.2)
-    
+    # Keep native PCoA distance units for both plots and CH diagnostics.
+    # Axis-wise standardization distorts the relative geometry of the axes.
+    points_by_threshold <- flattened_list
+
     # =================================== PLOTTING AND INDEX CALCULATION
     
     for (x in thresholds) {
-      # Retrieve normalized data for this threshold
-      # scaled_points[[paste0("threshold_", x)]] is a combined matrix with all repeats
+      # Retrieve native coordinates for this threshold
+      # points_by_threshold[[paste0("threshold_", x)]] is a combined matrix with all repeats
       # We need to split by repeats again
       current_key <- paste0("threshold_", x)
-      df <- as.data.frame(scaled_points[[current_key]])
+      df <- as.data.frame(points_by_threshold[[current_key]])
       rownames(df) <- NULL
-      df <- cbind("sample" = rownames(scaled_points[[current_key]]), df)
+      df <- cbind("sample" = rownames(points_by_threshold[[current_key]]), df)
       
       # Split into repeats
       n_points <- nrow(df)
@@ -223,18 +205,18 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
       split_reps <- split(df, ceiling(seq_len(n_points) / (n_points/y)))
       
       # Plot
-      # 'consensus_coordinates' should also be normalized.
-      norm_consensus <- normalize_coords(consensus_coordinates[[current_key]], axis_means, axis_sds)
+      # Consensus coordinates retain the same native units.
+      norm_consensus <- consensus_coordinates[[current_key]]
       
-      step3 <- plot_rep_raref(split_reps, norm_consensus, sample_data(physeq), color = group, group = group, cloud = TRUE, ellipse = TRUE, title = paste0("Threshold: ", x))
+      step3 <- plot_rep_raref(split_reps, norm_consensus, sample_data(physeq), color = group, group = group, cloud = TRUE, ellipse = TRUE, title = paste0("Threshold: ", x), axis_variance = axis_variances[[current_key]])
       plot <- step3$plot
       
-      plots[[paste0("repeat_number ", y)]][[current_key]] <- plot + xlim(x_limits) + ylim(y_limits)
+      plots[[paste0("repeat_number ", y)]][[current_key]] <- plot
       
       # =========================================== INDEX CALCULATION
       info <- step3$updated_info
       
-      # Fix the normalized consensus coordinates adding group variable
+      # Add group metadata to the native consensus coordinates
       norm_consensus_df <- data.frame
       temp_df <- as.data.frame(norm_consensus)
       temp_df$sample_id <- split_reps[["1"]]$sample
@@ -252,8 +234,13 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
       # Convert cluster labels to numbers
       cluster_consensus_numbers <- match(clusters_consensus, existing_groups_consensus)
       
-      # Calculate index
-      index <- clusterSim::index.G1(just_positions_consensus, cluster_consensus_numbers)
+      # CH requires at least two groups and residual within-group degrees of freedom.
+      n_groups <- length(unique(cluster_consensus_numbers))
+      index <- if (n_groups >= 2 && n_groups < nrow(just_positions_consensus)) {
+        clusterSim::index.G1(just_positions_consensus, cluster_consensus_numbers)
+      } else {
+        NA_real_
+      }
       
       index_data <- rbind(index_data, c(toString(y), x, index))
     }
@@ -281,9 +268,10 @@ test_threshold <- function(input, repeats = 50, t_min = 50, t_max = 250, t_step 
     labs(x = "Rarefaction Threshold", y = "Calinski-Harabasz pseudo F-statistic") +
     geom_smooth(method = "loess", formula = 'y ~ x')
   
-  output <- list(index_plot = index_plot, 
+  output <- list(index_plot = index_plot,
                  ordination_plots = plots,
-                 avg_distances = avg_distances_list)
+                 avg_distances = avg_distances_list,
+                 index_data = index_data)
   class(output) <- "test_threshold"
   return(output)
 }

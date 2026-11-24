@@ -2,7 +2,7 @@
 #'
 #' This function performs repeated rarefaction on a `phyloseq` object, 
 #' computes ordination, and generates a PCoA-based visualization.
-#' The same procedure is used from `threshold_testing` function when testing 
+#' The same procedure is used from `test_threshold` function when testing
 #' a range of thresholds. 
 #'
 #' @param input A `phyloseq` object.
@@ -15,19 +15,26 @@
 #' @param group A string. Column name in `sample_data()`. Used to group the 
 #' samples. The parameter is also used to draw an ellipse around the points. 
 #' @param cloud A boolean. If `TRUE`, all the data points generated from
-#' repetitions are shown. Otherwise, only the median points of each sample 
+#' repetitions are shown. Otherwise, only the consensus mean points of each sample
 #' repetition cloud are plotted.
-#' @param ellipse A boolean. If `TRUE`, confidence ellipses around sample
+#' @param ellipse A boolean. If `TRUE`, descriptive ellipses around sample
 #' groups are drawn.
 #' @param cores An integer. Number of cores to use for parallel processing.
 #' @param ... Additional arguments are reserved to internal use.
 #' @return A list containing (While also showing the plot directly):
 #'   - `repeats`: Number of repeats.
-#'   - `df_consensus_coordinates`: A data frame with coordinates of the median
+#'   - `df_consensus_coordinates`: A data frame with coordinates of the consensus mean
 #'   points of the sample clouds.
 #'   - `df_all`: A data frame of coordinates ordered by ordination number,
 #'   along with metatata.
-#'   - `plot`: a `ggplot` object.
+#'   - `plot`: a `ggplot` object with equal coordinate units.
+#'   - `axis_variance`: first-replicate axis percentages using the sum of absolute eigenvalues.
+#'   - `reference_eigenvalues`: eigenvalues of that reference PCoA.
+#' @details
+#' Scores retain native distance units; axes are not standardized separately.
+#' Percentages describe the first replicate used as the Procrustes reference,
+#' not an eigendecomposition of the consensus. Ellipses are descriptive,
+#' not inferential confidence intervals.
 #' @importFrom phyloseq sample_data otu_table sample_data<-
 #' @importFrom dplyr mutate
 #' @importFrom vegan rrarefy vegdist procrustes
@@ -47,7 +54,7 @@
 #'                      group = "location", 
 #'                      colorb = "location", 
 #'                      cloud = TRUE, 
-#'                      ellipse = TRUE)
+#'                      ellipse = TRUE, cores = 1)
 #'                      
 #' # We can run the function to highlight the spread of the single sample clouds
 #' # too, setting the groupb parameter to the sample_id.
@@ -57,7 +64,7 @@
 #'                      group = "sample_id", 
 #'                      colorb = "location", 
 #'                      cloud = TRUE, 
-#'                      ellipse = TRUE)
+#'                      ellipse = TRUE, cores = 1)
 repeated_rarefaction <- function(input, repeats = 50, threshold = 250, colorb="sample_id", group="sample_id", cloud = TRUE, ellipse = FALSE, cores = 2, ...) {
   # additional args (reserved for internal use)
   
@@ -88,26 +95,26 @@ repeated_rarefaction <- function(input, repeats = 50, threshold = 250, colorb="s
                   repeated_rarefaction needs an existing column to group samples by.", sep=""))
   }
 
-  if (!(is.double(repeats))){
+  if (!is.numeric(repeats) || any(!is.finite(repeats)) || any(repeats < 1) || any(repeats != floor(repeats))){
     stop(paste("Input for repeats: '", repeats, "' is not an integer.", sep=""))
   }
 
-  if (!(is.double(threshold))){
+  if (!is.numeric(threshold) || length(threshold) != 1 || !is.finite(threshold) || threshold < 1 || threshold != floor(threshold)){
     stop(paste("Input for threshold: '" ,threshold, "' is not an integer.", sep=""))
   }
 
   if (repeats <=4 & ellipse == TRUE){
-    warning("Too few repeats to draw confidence ellipses. Proceeding with the available data.")
+    warning("Too few repeats to draw descriptive ellipses. Proceeding with the available data.")
     ellipse <- FALSE
   }
 
   # Perform the different steps of the repeated rarefaction algorithm
   # Perform rarefactions (each replicate handled inside rep_raref)
-  step1 <- rep_raref(data.frame(t(otu_table(physeq))), threshold, repeats, cores = cores)
+  step1 <- rep_raref(sample_count_matrix(physeq), threshold, repeats, cores = cores)
   step2 <- ord_and_mean(step1$rarefied_matrix_list, repeats, distance = "bray", cores = cores)
-  step3 <- plot_rep_raref(step2$aligned_ordinations, step2$consensus_coordinates, sample_data(physeq), colorb, group, cloud, ellipse, "Aligned Ordinations with Consensus Overlaid")
+  step3 <- plot_rep_raref(step2$aligned_ordinations, step2$consensus_coordinates, sample_data(physeq), colorb, group, cloud, ellipse, "Aligned Ordinations with Consensus Overlaid", axis_variance = step2$axis_variance)
 
   print(step3$plot)
 
-  return(invisible(list("repeats" = repeats, "df_consensus_coordinates" = step3$consensus_df, "df_all" = step3$df_all, "plot" = step3$plot)))
+  return(invisible(list("repeats" = repeats, "df_consensus_coordinates" = step3$consensus_df, "df_all" = step3$df_all, "plot" = step3$plot, "axis_variance" = step2$axis_variance, "reference_eigenvalues" = step2$reference_eigenvalues)))
 }
